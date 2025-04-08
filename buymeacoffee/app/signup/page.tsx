@@ -24,8 +24,8 @@ const signUpPage = () => {
             </div>
             <div className='flex justify-center items-center w-1/2 h-screen'>
                 <div>
-                    <div className='p-[24px] gap-[6px]'>
-                        <p className='text-2xl font-bold'>Create Your Account</p>
+                    <div>
+                        <p>Create Your Account</p>
                         <p>Choose a username for your page </p>
                     </div>
                     <div>
