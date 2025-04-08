@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const MultiStep = () => {
   const [currentStep, setCurrentStep] = useState(0);
+
   const [formValue, setFormValue] = useState<any>({});
 
   useEffect(() => {
@@ -18,7 +19,8 @@ const MultiStep = () => {
     }
   }, []);
 
-  const steps = [<FirstStep key="1" />, <SecondStep key="2" />];
+
+  
 
   const handleNextPage = () => {
     if (currentStep < steps.length - 1) {
@@ -36,6 +38,13 @@ const MultiStep = () => {
     }
   };
 
+  const steps = [
+    <FirstStep key="1" onNext={handleNextPage} />,
+    <SecondStep key="2" onBack={handleBackPage} onNext={function (): void {
+      throw new Error("Function not implemented.");
+    } }/>,
+  ];
+
   return (
     <div className="relative min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <AnimatePresence mode="wait">
@@ -48,22 +57,7 @@ const MultiStep = () => {
           className="w-full max-w-xl"
         >
           {steps[currentStep]}
-          <div className="mt-6 flex justify-between">
-            <button
-              onClick={handleBackPage}
-              disabled={currentStep === 0}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition disabled:opacity-50"
-            >
-              Back
-            </button>
-            <button
-              onClick={handleNextPage}
-              disabled={currentStep === steps.length - 1}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-            >
-              Next
-            </button>
-          </div>
+
         </motion.div>
       </AnimatePresence>
     </div>
