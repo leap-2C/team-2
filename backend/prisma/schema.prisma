@@ -1,0 +1,55 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  createdAt         DateTime   @default(now())
+  email             String     @unique
+  username          String?
+  profileid         Int
+  bankCard          BankCard[]
+  password          String
+  recievedDonations Donation[]
+}
+
+model Donation {
+  id                         Int      @id @default(autoincrement())
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  amount                     Int
+  donorId                    Int
+  recipientId                Int
+  socialUrlOrBuyMeACoffeeUrl String
+  specialMessage             String
+  User                       User?    @relation(fields: [userId], references: [id])
+  userId                     Int?
+}
+
+model BankCard {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  cardNumber     String
+  firstName      String
+  lastName       String
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  expirationDate DateTime
+}
+
+model Profile {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  aboutMe         String
+  avartarImage    String
+  socialMediaUrl  String
+  backgroundImage String
+  successMessage  String
+}
