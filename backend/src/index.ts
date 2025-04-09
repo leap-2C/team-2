@@ -1,13 +1,16 @@
 import express from 'express';
 import cors from 'cors';
-import { Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import userRouter from './router/user-router';
 
 const app = express();
 const PORT = 9000;
 app.use(cors());
 app.use(express.json());
 
+const prisma = new PrismaClient();
 
+app.use('/user', userRouter);
 
 
 app.listen(PORT, () => {
