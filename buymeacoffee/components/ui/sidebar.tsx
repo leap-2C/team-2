@@ -8,7 +8,7 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
     { label: "Home", key: "home" },
     { label: "Explore", key: "explore" },
     { label: "View Page", key: "view" },
-    { label: "Account Settings", key: "settings" },
+    { label: "Account Settings", key: "account-settings" },
   ];
 
   return (
