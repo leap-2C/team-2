@@ -13,6 +13,9 @@ export const getUser = async (req: Request, res: Response) => {
         username: true,
         email: true,
         createdAt: true,
+        profile: true,
+        donationsReceived: true,
+        bankCard: true
       },
     });
 

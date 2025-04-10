@@ -11,6 +11,9 @@ app.use(express.json());
 const prisma = new PrismaClient();
 
 app.use('/user', userRouter);
+app.use('/donation', userRouter);
+app.use('/bankCard', userRouter);
+app.use('/profile', userRouter);
 
 
 app.listen(PORT, () => {
