@@ -15,7 +15,21 @@ model User {
   profile           Profile?   @relation("UserProfile")
   bankCard          BankCard[]
   password          String
-  recievedDonations Donation[]
+  donationsSent     Donation[] @relation("Donor")    
+  donationsReceived Donation[] @relation("Recipient")
+}
+
+model Donation {
+  id                         Int      @id @default(autoincrement())
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  amount                     Int
+  donor                      User     @relation("Donor", fields: [donorId], references: [id])
+  donorId                    Int
+  recipient                  User     @relation("Recipient", fields: [recipientId], references: [id])
+  recipientId                Int
+  socialUrlOrBuyMeACoffeeUrl String
+  specialMessage             String
 }
 
 model Profile {
@@ -31,18 +45,6 @@ model Profile {
   userId          Int      @unique
 }
 
-model Donation {
-  id                         Int      @id @default(autoincrement())
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
-  amount                     Int
-  donorId                    Int
-  recipientId                Int
-  socialUrlOrBuyMeACoffeeUrl String
-  specialMessage             String
-  User                       User     @relation(fields: [userId], references: [id])
-  userId                     Int
-}
 
 model BankCard {
   id             Int      @id @default(autoincrement())
