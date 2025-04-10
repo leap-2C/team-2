@@ -24,7 +24,6 @@ const createProfile = async (req: Request, res: Response) => {
         return res.status(404).json({ error: "User not found" });
       }
   
-      // Check if profile already exists
       const existingProfile = await prisma.profile.findUnique({
         where: { userId: userIdNumber }
       });
