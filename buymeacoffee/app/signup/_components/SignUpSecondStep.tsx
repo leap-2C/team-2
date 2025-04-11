@@ -1,42 +1,52 @@
-"use client"
+'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFormik } from 'formik';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import axios from 'axios';
+import { log } from 'console';
 
 const SignUpSecondStep = ({ formData, onPrev }: { formData: any; onPrev: () => void }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const router = useRouter();
 
-    const formik = useFormik({
-        initialValues: {
-            email: formData.email || '',
-            password: '',
-        },
-        validate: (values) => {
-            const errors: any = {};
-            if (!values.email) {
-                errors.email = 'Email is required';
-            } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-                errors.email = 'Email is invalid';
-            }
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+        console.log("Form submitted");
+        console.log("usernameeeee",username);
+        
 
-            if (!values.password) {
-                errors.password = 'Password is required';
-            } else if (values.password.length < 6) {
-                errors.password = 'Password must be at least 6 characters long';
-            }
+        if (!email || !password || !username) {
+            setError('Please fill in all fields.');
+            console.log("Validation failed");
+            return;
+        }
 
-            return errors;
-        },
-        onSubmit: (values) => {
-            console.log('Form submitted:', { ...formData, ...values });
-            router.push('/login');
-        },
-    });
+        setLoading(true);
+        setError('');
+        console.log("Making request with:", { email, password, username });
+
+        try {
+            const response = await axios.post('http://localhost:9000/user/signup', { email, password, username });
+            console.log('Response:', response);
+            if (response.status === 200) {
+                console.log('Signup successful');
+                router.push("/login");
+            }
+        } catch (err) {
+            console.error('Error during signup:', err);
+            setError('Failed to sign up. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="flex w-full h-screen">
@@ -71,7 +81,7 @@ const SignUpSecondStep = ({ formData, onPrev }: { formData: any; onPrev: () => v
                         </p>
                         <p>Connect email and set a password</p>
                     </div>
-                    <form onSubmit={formik.handleSubmit}>
+                    <form onSubmit={handleSignUp}>
                         <div>
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -80,13 +90,9 @@ const SignUpSecondStep = ({ formData, onPrev }: { formData: any; onPrev: () => v
                                 type="email"
                                 className="w-full mt-[6px]"
                                 placeholder="Enter email here"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                             />
-                            {formik.touched.email && formik.errors.email && (
-                                <div className="text-red-500">{formik.errors.email}</div>
-                            )}
                         </div>
                         <div className="mt-[16px]">
                             <Label htmlFor="password">Password</Label>
@@ -96,20 +102,17 @@ const SignUpSecondStep = ({ formData, onPrev }: { formData: any; onPrev: () => v
                                 type="password"
                                 className="w-full mt-[6px]"
                                 placeholder="Enter password here"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
                             />
-                            {formik.touched.password && formik.errors.password && (
-                                <div className="text-red-500">{formik.errors.password}</div>
-                            )}
                         </div>
                         <div className="flex justify-between mt-[24px]">
-                            <Button type="submit" className="bg-black text-white w-full">
-                                Continue
+                            <Button type="submit" className="bg-black text-white w-full" disabled={loading}>
+                                {loading ? 'Signing Up...' : 'Continue'}
                             </Button>
                         </div>
                     </form>
+                    {error && <p className="text-red-500">{error}</p>}
                 </div>
             </div>
         </div>
