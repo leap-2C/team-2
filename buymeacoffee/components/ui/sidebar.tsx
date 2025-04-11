@@ -7,7 +7,7 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
   const items = [
     { label: "Home", key: "home" },
     { label: "Explore", key: "explore" },
-    { label: "View Page", key: "view" },
+    { label: "View Page", key: "view-page" },
     { label: "Account Settings", key: "account-settings" },
   ];
 
