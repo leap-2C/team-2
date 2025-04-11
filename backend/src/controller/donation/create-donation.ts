@@ -42,7 +42,7 @@ export const createDonation = async (req: Request, res: Response) => {
       },
     });
 
-    // 3. Return the created donation
+    
     res.status(201).json(donation);
   } catch (error) {
     console.error("Error creating donation:", error);
