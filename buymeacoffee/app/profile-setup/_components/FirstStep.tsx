@@ -8,10 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils"; // optional, for cleaner conditional styling
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { toast } from 'react-toastify'
+import { useEffect } from "react";
+import { useToken } from "@/hooks/TokenContext";
 
-const FirstStep = ({ onNext }: { onNext: () => void }) => {
+const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { token } = useToken();
+
+
+  useEffect(() => {
+    console.log("Current token:", token); // Debug token
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -26,9 +38,35 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
         .url("Invalid URL format")
         .required("Social link is required"),
     }),
-    onSubmit: (values) => {
-      console.log("Form values:", values);
-      onNext(); // Trigger going to second step
+    onSubmit: async (values) => {
+      if (!imagePreview) {
+        toast.error("Please upload a profile image");
+        return;
+      }
+
+      setIsSubmitting(true);
+      
+      try {    
+        const response = await axios.post("http://localhost:9000/user/profile", {
+          aboutMe: values.about,
+          avatarImage: imagePreview,
+          socialMediaUrl: values.socialLink
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 201) {
+          toast.success("Profile created successfully!");
+          onNext();
+        }
+      } catch (error: any) {
+        console.error("Profile creation error:", error);
+        toast.error(error.response?.data?.error || "Failed to create profile");
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 
@@ -36,6 +74,7 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
     formik.values.name &&
     formik.values.about &&
     formik.values.socialLink &&
+    imagePreview &&
     !formik.errors.name &&
     !formik.errors.about &&
     !formik.errors.socialLink;
@@ -129,9 +168,9 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
             <Button
               type="submit"
               className="w-full mt-2"
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSubmitting}
             >
-              Continue
+              {isSubmitting ? "Creating Profile..." : "Continue"}
             </Button>
           </form>
         </div>
