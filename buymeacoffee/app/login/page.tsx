@@ -1,10 +1,39 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        if (!email || !password) {
+            setError('Please fill in both fields.');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await axios.post('http://localhost:9000/user/login', { email, password });
+            console.log(response.data);
+            window.location.href = '/profile-setup';
+        } catch (err) {
+            console.error(err);
+            setError('Failed to login. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="flex relative h-screen">
             <div className="absolute top-4 right-4">
@@ -35,7 +64,7 @@ const LoginPage = () => {
                     <div className="py-[24px] gap-[6px]">
                         <p className="text-2xl font-bold">Welcome back</p>
                     </div>
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <div>
                             <label htmlFor="email" className="block text-sm font-semibold">Email</label>
                             <input
@@ -44,6 +73,8 @@ const LoginPage = () => {
                                 type="email"
                                 className="w-full mt-[6px] p-2 border border-gray-300 rounded-md"
                                 placeholder="Enter email here"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className="mt-[16px]">
@@ -54,11 +85,18 @@ const LoginPage = () => {
                                 type="password"
                                 className="w-full mt-[6px] p-2 border border-gray-300 rounded-md"
                                 placeholder="Enter password here"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
+                        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                         <div className="flex justify-between mt-[24px]">
-                            <Button type="submit" className="bg-black text-white w-full">
-                                Continue
+                            <Button
+                                type="submit"
+                                className="bg-black text-white w-full"
+                                disabled={loading}
+                            >
+                                {loading ? 'Logging in...' : 'Continue'}
                             </Button>
                         </div>
                     </form>

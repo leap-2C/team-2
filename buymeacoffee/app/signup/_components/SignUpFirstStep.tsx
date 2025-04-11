@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React from 'react';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 const SignUpFirstStep = ({ formData, onNext }: { formData: any; onNext: (data: any) => void }) => {
     const formik = useFormik({
         initialValues: {
-            userName: formData.userName,
+            userName: formData.userName || '', // Ensure initial value is not undefined
         },
         validate: (values) => {
             const errors: any = {};
@@ -22,7 +22,10 @@ const SignUpFirstStep = ({ formData, onNext }: { formData: any; onNext: (data: a
             return errors;
         },
         onSubmit: (values) => {
-            onNext(values);
+            if (Object.keys(values).length === 0 || values.userName === '') {
+                return; // Prevent submission if values are empty
+            }
+            onNext(values); // Pass data to the next step
         },
     });
 
@@ -85,4 +88,3 @@ const SignUpFirstStep = ({ formData, onNext }: { formData: any; onNext: (data: a
 };
 
 export default SignUpFirstStep;
-
