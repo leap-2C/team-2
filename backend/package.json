@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
     "@prisma/client": "^6.6.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -19,6 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.14.1",
     "pg-hstore": "^2.3.4",
+    "pool": "^0.4.1",
+    "resend": "^4.2.0",
     "sequelize": "^6.37.7"
   },
   "keywords": [],
