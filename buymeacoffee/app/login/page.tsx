@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { sendRequest } from "@/lib/sendRequest";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  
 interface LoginResponse {
     token: string;
 }
@@ -29,7 +31,7 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> =
     setError("");
 
     try {
-        const response = await axios.post<LoginResponse>("http://localhost:9000/user/login", {
+        const response = await sendRequest.post<LoginResponse>("/user/login", {
             email,
             password,
         });

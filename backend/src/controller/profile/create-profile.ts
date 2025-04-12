@@ -11,7 +11,6 @@ const createProfile = async (req: Request, res: Response) => {
         if (!token) {
             return res.status(401).json({ error: "Authorization token required" });
         }
-
         
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
         const userId = decoded.userId;

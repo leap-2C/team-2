@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
 import { useToken } from "@/hooks/TokenContext";
 import Router from "next/navigation";
+import { sendRequest } from "@/lib/sendRequest";
 
 const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +59,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
           cvc: values.cvc
         };
 
-        const response = await axios.post("http://localhost:9000/user/bankCard", cardData, {
+        const response = await sendRequest.post("/user/bankCard", cardData, {
           headers: {
             Authorization: `Bearer ${token}`
           }
