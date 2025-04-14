@@ -8,42 +8,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma = new client_1.PrismaClient();
 const createProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const { aboutMe, avatarImage, socialMediaUrl, userId } = req.body;
-        // Convert userId to number
-        const userIdNumber = parseInt(userId, 10);
-        // Validate userId conversion
-        if (isNaN(userIdNumber)) {
-            return res.status(400).json({ error: "Invalid user ID format" });
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: "Authorization token required" });
         }
-        // Check if user exists
-        const user = yield prisma.user.findUnique({
-            where: { id: userIdNumber },
-        });
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.userId;
+        const { aboutMe, avatarImage, socialMediaUrl } = req.body;
+        if (!aboutMe || !avatarImage || !socialMediaUrl) {
+            return res.status(400).json({
+                error: "Validation Error",
+                details: {
+                    aboutMe: !aboutMe ? "Required" : undefined,
+                    avatarImage: !avatarImage ? "Required" : undefined,
+                    socialMediaUrl: !socialMediaUrl ? "Required" : undefined
+                }
+            });
         }
         const existingProfile = yield prisma.profile.findUnique({
-            where: { userId: userIdNumber }
+            where: { userId }
         });
         if (existingProfile) {
-            return res.status(400).json({ error: "Profile already exists for this user" });
+            return res.status(409).json({ error: "User profile already exists" });
         }
-        // Create profile
         const profile = yield prisma.profile.create({
             data: {
                 aboutMe,
                 avatarImage,
                 socialMediaUrl,
-                user: {
-                    connect: { id: userIdNumber }
-                }
+                userId
             },
-            include: {
+            select: {
+                id: true,
+                aboutMe: true,
+                avatarImage: true,
+                socialMediaUrl: true,
                 user: {
                     select: {
                         id: true,
@@ -54,15 +63,18 @@ const createProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             }
         });
         res.status(201).json({
-            message: "Profile created successfully",
-            profile,
+            success: true,
+            data: profile
         });
     }
     catch (error) {
         console.error("Profile creation error:", error);
+        if (error instanceof jsonwebtoken_1.default.JsonWebTokenError) {
+            return res.status(401).json({ error: "Invalid or expired token" });
+        }
         res.status(500).json({
-            error: "Internal server error",
-            message: "Profile creation failed",
+            error: "Server Error",
+            message: "Failed to create profile"
         });
     }
 });

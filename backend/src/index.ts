@@ -5,7 +5,14 @@ import userRouter from "./router/user-router";
 
 const app = express();
 const PORT = 9000;
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json());
 
 const prisma = new PrismaClient();

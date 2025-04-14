@@ -21,27 +21,28 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const createLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        // Find user by email
         const user = yield prisma.user.findUnique({
-            where: { email }
+            where: { email },
+            include: {
+                profile: true
+            }
         });
         if (!user) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
-        // Compare passwords
         const passwordMatch = yield bcrypt_1.default.compare(password, user.password);
         if (!passwordMatch) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
-        // Create JWT token
         const token = jsonwebtoken_1.default.sign({
             userId: user.id,
             email: user.email
         }, JWT_SECRET || "default_secret");
-        // Return success response with token
+        const hasProfile = !!user.profile;
         res.status(200).json({
             message: "Login successful",
             token,
+            hasProfile,
             user: {
                 id: user.id,
                 email: user.email,
