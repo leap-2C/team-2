@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import Image from "next/image";
-import { Camera } from 'lucide-react';
+import { Camera } from "lucide-react";
+
+
 const ProfileSettings = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -36,7 +38,6 @@ const ProfileSettings = () => {
     }),
     onSubmit: (values) => {
       console.log("Submitted:", { ...values, imageUrl });
-     
     },
   });
 
@@ -58,7 +59,6 @@ const ProfileSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-          
             <div className="flex items-center space-x-4">
               <CldUploadWidget
                 uploadPreset="ml_default"
@@ -79,7 +79,7 @@ const ProfileSettings = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500 text-sm">
-                         <Camera />
+                        <Camera />
                       </div>
                     )}
                   </button>

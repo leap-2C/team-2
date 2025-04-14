@@ -9,21 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { toast } from 'react-toastify'
-import { useEffect } from "react";
+import { toast } from 'react-toastify';
 import { useToken } from "@/hooks/TokenContext";
 
-const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) => {
+const FirstStep = ({ onNext }: { onNext: () => void }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const { token } = useToken();
-
-
-  useEffect(() => {
-    console.log("Current token:", token); // Debug token
-  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -47,15 +39,21 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
       setIsSubmitting(true);
       
       try {    
-        const response = await axios.post("http://localhost:9000/user/profile", {
-          aboutMe: values.about,
-          avatarImage: imagePreview,
-          socialMediaUrl: values.socialLink
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const response = await axios.post(
+          "http://localhost:9000/user/profile", 
+          {
+            name: values.name,
+            aboutMe: values.about,
+            avatarImage: imagePreview,
+            socialMediaUrl: values.socialLink
+          }, 
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
           }
-        });
+        );
 
         if (response.status === 201) {
           toast.success("Profile created successfully!");
@@ -63,7 +61,17 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
         }
       } catch (error: any) {
         console.error("Profile creation error:", error);
-        toast.error(error.response?.data?.error || "Failed to create profile");
+        let errorMessage = "Failed to create profile";
+        
+        if (error.response) {
+          if (error.response.status === 401) {
+            errorMessage = "Session expired. Please log in again.";
+          } else if (error.response.data?.error) {
+            errorMessage = error.response.data.error;
+          }
+        }
+        
+        toast.error(errorMessage);
       } finally {
         setIsSubmitting(false);
       }
@@ -88,11 +96,24 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
           {/* Avatar Upload */}
           <CldUploadWidget
             uploadPreset="ml_default"
-            onSuccess={(result: CloudinaryUploadWidgetInfo) => {
-              const info = result?.info as { secure_url?: string };
-              if (info?.secure_url) {
+            options={{
+              sources: ['local', 'url', 'camera'],
+              multiple: false,
+              maxFiles: 1,
+              cropping: true,
+              croppingAspectRatio: 1,
+              croppingShowDimensions: true
+            }}
+            onSuccess={(result) => {
+              const info = result.info as CloudinaryUploadWidgetInfo;
+              if (info.secure_url) {
                 setImagePreview(info.secure_url);
+                toast.success("Image uploaded successfully");
               }
+            }}
+            onError={(error) => {
+              console.error("Upload error:", error);
+              toast.error("Failed to upload image");
             }}
           >
             {({ open }) => (
@@ -127,6 +148,7 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter your name"
+                disabled={isSubmitting}
               />
               {formik.touched.name && formik.errors.name && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.name}</p>
@@ -143,6 +165,7 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
                 onBlur={formik.handleBlur}
                 placeholder="Tell us about yourself"
                 rows={3}
+                disabled={isSubmitting}
               />
               {formik.touched.about && formik.errors.about && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.about}</p>
@@ -159,6 +182,7 @@ const FirstStep = ({ onNext, userId }: { onNext: () => void; userId: string }) =
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="https://your-social.com"
+                disabled={isSubmitting}
               />
               {formik.touched.socialLink && formik.errors.socialLink && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.socialLink}</p>

@@ -3,9 +3,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import { useUser } from "@/hooks/UserContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const {userData} = useUser();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -31,7 +33,7 @@ const Header = () => {
           onClick={toggleDropdown}
         >
           <Image
-            src="/avatar-image.svg"
+             src={userData?.profile?.avatarImage || "/default-avatar.svg"}
             alt="User avatar"
             width={24}
             height={24}

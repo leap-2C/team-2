@@ -7,19 +7,31 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
 import { useToken } from "@/hooks/TokenContext";
-import Router from "next/navigation";
+import { sendRequest } from "@/lib/sendRequest";
 
 const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { token } = useToken();
-  const { push } = useRouter();
+  const router = useRouter();
 
   const years = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString());
   const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, "0"));
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+    
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    
+    return parts.length ? parts.join('-') : value;
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -47,19 +59,19 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
+        // Format expiration date as YYYY-MM-DD
+        const expirationDate = `${values.expiryYear}-${values.expiryMonth}-01`;
+        
         const cardData = {
           cardNumber: values.cardNumber.replace(/-/g, ''),
           firstName: values.firstName,
           lastName: values.lastName,
-          expirationDate: new Date(
-            parseInt(values.expiryYear),
-            parseInt(values.expiryMonth) - 1
-          ).toISOString(),
+          expirationDate,
           country: values.country,
           cvc: values.cvc
         };
 
-        const response = await axios.post("http://localhost:9000/user/bankCard", cardData, {
+        const response = await sendRequest.post("/user/bankCard", cardData, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -67,12 +79,19 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
 
         if (response.status === 201) {
           toast.success("Payment method saved successfully!");
-          onNext();
-          push("/");
+          onNext(); // Move to next step or complete the flow
         }
       } catch (error: any) {
         console.error("Error saving card:", error);
-        toast.error(error.response?.data?.error || "Failed to save payment method");
+        
+        if (error.response?.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          router.push("/login");
+        } else if (error.response?.data?.error) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("Failed to save payment method. Please try again.");
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -95,6 +114,8 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
     !formik.errors.expiryYear &&
     !formik.errors.cvc;
 
+  const inputDisabled = isSubmitting;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-6">
@@ -108,6 +129,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
             <Select
               value={formik.values.country}
               onValueChange={(value) => formik.setFieldValue("country", value)}
+              disabled={inputDisabled}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select country" />
@@ -133,6 +155,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
                 value={formik.values.firstName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                disabled={inputDisabled}
               />
               {formik.touched.firstName && formik.errors.firstName && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.firstName}</p>
@@ -147,6 +170,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
                 value={formik.values.lastName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                disabled={inputDisabled}
               />
               {formik.touched.lastName && formik.errors.lastName && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.lastName}</p>
@@ -161,8 +185,12 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
               name="cardNumber"
               placeholder="XXXX-XXXX-XXXX-XXXX"
               value={formik.values.cardNumber}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                const formatted = formatCardNumber(e.target.value);
+                formik.setFieldValue("cardNumber", formatted);
+              }}
               onBlur={formik.handleBlur}
+              disabled={inputDisabled}
             />
             {formik.touched.cardNumber && formik.errors.cardNumber && (
               <p className="text-sm text-red-500 mt-1">{formik.errors.cardNumber}</p>
@@ -176,6 +204,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
               <Select
                 value={formik.values.expiryMonth}
                 onValueChange={(value) => formik.setFieldValue("expiryMonth", value)}
+                disabled={inputDisabled}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Month" />
@@ -196,6 +225,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
               <Select
                 value={formik.values.expiryYear}
                 onValueChange={(value) => formik.setFieldValue("expiryYear", value)}
+                disabled={inputDisabled}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Year" />
@@ -219,6 +249,7 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
                 value={formik.values.cvc}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                disabled={inputDisabled}
               />
               {formik.touched.cvc && formik.errors.cvc && (
                 <p className="text-sm text-red-500 mt-1">{formik.errors.cvc}</p>
