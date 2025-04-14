@@ -6,7 +6,8 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.ts",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "vercel-build": "prisma generate && prisma migrate deploy && tsc"
   },
   "author": "",
   "license": "ISC",
