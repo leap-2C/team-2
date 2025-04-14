@@ -52,8 +52,8 @@ export const createDonation = async (req: Request, res: Response) => {
         amount: Number(amount),
         donorId: userId,
         recipientId: recipient.id,
-        message: message || null,
-        isGuest: false,
+        socialUrlOrBuyMeACoffeeUrl: "",
+        specialMessage: "",
       },
       include: {
         donor: {
