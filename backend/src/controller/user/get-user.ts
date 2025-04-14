@@ -34,5 +34,20 @@ export const getUser = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ user });
-  } catch {}
+  } catch (error) {
+    console.error("Error in getUser:", error);
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ error: "Token expired" });
+    }
+
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 };

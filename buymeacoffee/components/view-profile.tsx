@@ -3,13 +3,62 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Creator, Supporter } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { sendRequest } from "@/lib/sendRequest";
+import { useToken } from "@/hooks/TokenContext";
 
 export default function ViewProfile({ creator }: { creator: Creator }) {
   const [amount, setAmount] = useState<number>(1);
   const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { token } = useToken();
+
+  const handleDonate = async () => {
+    setIsLoading(true);
+    
+    try {
+      const response = await sendRequest.post("/user/donation", {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: {
+          amount,
+          recipientUsername: creator.username,
+          message
+        }
+      });
+
+      if (response.status === 401) {
+        toast.error('Please log in to donate.');
+        router.push("/login");
+        return;
+      }
+
+      if (response.status === 400) {
+        throw new Error(response.error || 'Donation failed');
+      }
+
+      toast.success(
+        response.isGuest 
+          ? `Thanks for your $${amount} support as a guest!` 
+          : `Thank you for your $${amount} donation!`
+      );
+
+      
+      router.refresh();
+      
+    } catch (error) {
+      console.error("Donation error:", error);
+      toast.error(error instanceof Error ? error.message : 'Donation failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!creator) {
     return (
@@ -21,8 +70,8 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
+      {/* Left Column - Creator Info */}
       <div className="space-y-4">
-        {/* About */}
         <Card>
           <CardContent className="p-4">
             <h2 className="text-xl font-bold">{creator.name}</h2>
@@ -33,7 +82,6 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
           </CardContent>
         </Card>
 
-        {/* Social URL */}
         <Card>
           <CardContent className="p-4">
             <h3 className="text-sm font-medium text-muted-foreground">
@@ -50,7 +98,6 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
           </CardContent>
         </Card>
 
-        {/* Supporters */}
         <Card>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-medium text-muted-foreground">
@@ -67,7 +114,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
               ))
             ) : (
               <p className="text-sm text-muted-foreground">
-                Be the first one to support Jake.
+                Be the first one to support {creator.name}.
               </p>
             )}
             <Button variant="ghost">See more</Button>
@@ -75,7 +122,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
         </Card>
       </div>
 
-      {/* RIGHT SIDE: Support Form */}
+      {/* Right Column - Donation Form */}
       <div>
         <Card>
           <CardContent className="p-6 space-y-4">
@@ -84,7 +131,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
             </h2>
 
             <div className="flex gap-2">
-              {[1, 2, 5, 10].map((val: number) => (
+              {[1, 2, 5, 10].map((val) => (
                 <Button
                   key={val}
                   variant={amount === val ? "default" : "outline"}
@@ -95,15 +142,26 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
               ))}
             </div>
 
-            <Input defaultValue={creator.url} />
-
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Special message"
+              placeholder="Say something nice..."
+              className="min-h-[100px]"
             />
 
-            <Button className="w-full">Support</Button>
+            <Button 
+              className="w-full" 
+              onClick={handleDonate}
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Support"}
+            </Button>
+
+            {!token && (
+              <p className="text-sm text-muted-foreground text-center">
+                You're supporting as a guest
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

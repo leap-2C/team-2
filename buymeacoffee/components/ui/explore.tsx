@@ -8,15 +8,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { Creator } from "../../lib/types";
 import { sendRequest } from "@/lib/sendRequest";
-
-interface FetchedUser {
-  username: string;
-  profile: {
-    aboutMe: string;
-    avatarImage: string;
-    socialMediaUrl: string;
-  } | null;
-}
+import { FetchedUser } from "@/lib/types";
 
 export default function Explore({
   handleViewProfile,

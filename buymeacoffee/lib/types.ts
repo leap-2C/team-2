@@ -41,3 +41,12 @@ export type UserData = {
   profile: UserProfile;
   donationsReceived: Donation[];
 };
+
+export interface FetchedUser {
+  username: string;
+  profile: {
+    aboutMe: string;
+    avatarImage: string;
+    socialMediaUrl: string;
+  } | null;
+}
