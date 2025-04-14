@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-const backendUrl = "http://localhost:9000"
-
+const backendUrl = "http://localhost:9000";
 
 export const sendRequest = axios.create({ baseURL: backendUrl });

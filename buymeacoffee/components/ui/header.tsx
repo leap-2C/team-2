@@ -7,7 +7,7 @@ import { useUser } from "@/hooks/UserContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {userData} = useUser();
+  const { userData } = useUser();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -16,7 +16,7 @@ const Header = () => {
   return (
     <header className="w-full border-b px-4 py-2 flex items-center justify-between bg-white">
       <div className="flex items-center gap-2 relative">
-        <Image src="/logo.svg" alt="Logo" width={40} height={40} />
+        <Image src="/logo.svg" alt="Logo" width={24} height={24} />
 
         <div className="relative">
           <span className="text-xl font-medium text-black relative z-10">
@@ -33,13 +33,13 @@ const Header = () => {
           onClick={toggleDropdown}
         >
           <Image
-             src={userData?.profile?.avatarImage || "/default-avatar.svg"}
+            src={userData?.profile?.avatarImage || "/avatar-image.svg"}
             alt="User avatar"
-            width={24}
-            height={24}
+            width={30}
+            height={30}
             className="rounded-full"
           />
-          <span className="text-xs font-medium text-black"> Jake</span>
+          <h2 className="text-xs font-medium text-black"> Jake</h2>
           <ChevronDown className="w-3 h-3 text-black" />{" "}
         </button>
 

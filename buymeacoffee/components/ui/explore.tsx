@@ -36,18 +36,16 @@ export default function Explore({
     fetchExplore();
   }, []);
 
-  // Helper function to validate image URLs
   const getValidImageUrl = (url: string | undefined) => {
     if (!url) return "/default-avatar.svg";
     try {
       new URL(url);
-      return url.startsWith('/') ? url : `/${url}`;
+      return url.startsWith("/") ? url : `/${url}`;
     } catch {
       return "/default-avatar.svg";
     }
   };
 
-  // Convert fetched users to Creator format
   const creatorsData = usersData.map((user) => ({
     name: user.username,
     about: user.profile?.aboutMe || "No description available",
@@ -63,8 +61,10 @@ export default function Explore({
   );
 
   if (loading) return <div className="p-6 text-center">Loading...</div>;
-  if (error) return <div className="p-6 text-center text-red-500">Error: {error}</div>;
-  if (usersData.length === 0) return <div className="p-6 text-center">No creators found</div>;
+  if (error)
+    return <div className="p-6 text-center text-red-500">Error: {error}</div>;
+  if (usersData.length === 0)
+    return <div className="p-6 text-center">No creators found</div>;
 
   return (
     <div className="space-y-6 px-4 md:px-12 py-6">
