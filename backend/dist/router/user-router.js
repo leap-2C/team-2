@@ -19,6 +19,7 @@ const create_profile_1 = __importDefault(require("../controller/profile/create-p
 const create_donation_1 = require("../controller/donation/create-donation");
 const create_bankCard_1 = require("../controller/bankCard/create-bankCard");
 const get_user_1 = require("../controller/user/get-user");
+const get_users_1 = __importDefault(require("../controller/user/get-users"));
 const userRouter = (0, express_1.Router)();
 userRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, create_user_1.createUser)(req, res);
@@ -35,7 +36,10 @@ userRouter.post("/donation", (req, res) => __awaiter(void 0, void 0, void 0, fun
 userRouter.post("/bankCard", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, create_bankCard_1.createBankCard)(req, res);
 }));
-userRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+userRouter.get("/current", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, get_user_1.getUser)(req, res);
+}));
+userRouter.get("/explore", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, get_users_1.default)(req, res);
 }));
 exports.default = userRouter;
