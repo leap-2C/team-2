@@ -14,9 +14,7 @@ import Image from "next/image";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
 
-
 export default function DashboardCard() {
-  
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const { userData } = useUser();
 
@@ -42,10 +40,10 @@ export default function DashboardCard() {
       <Card className="w-full p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Image
-            src={userData?.profile?.avatarImage || "/default-avatar.svg"}
+            src={userData?.profile?.avatarImage || "/avatar-image.svg"}
             alt="User Avatar"
-            width={64}
-            height={64}
+            width={30}
+            height={30}
             className="rounded-full"
           />
           <div>

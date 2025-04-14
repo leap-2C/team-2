@@ -1,16 +1,13 @@
-
-
 import { Router } from "express";
-import { createUser } from "../controller/user/create-user"; 
+import { createUser } from "../controller/user/create-user";
 import { createLogin } from "../controller/login/create-login";
 import createProfile from "../controller/profile/create-profile";
 import { createDonation } from "../controller/donation/create-donation";
 import { createBankCard } from "../controller/bankCard/create-bankCard";
 import { getUser } from "../controller/user/get-user";
-import  getUsers  from "../controller/user/get-users";
+import getUsers from "../controller/user/get-users";
 
 const userRouter = Router();
-
 
 userRouter.post("/signup", async (req, res) => {
   await createUser(req, res);
