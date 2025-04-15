@@ -1,6 +1,9 @@
+import { Creator } from "@/lib/types";
+
 interface SidebarProps {
   activePage: string;
   setActivePage: (page: string) => void;
+  setSelectedCreator: (creator: Creator | null) => void;
 }
 
 export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
