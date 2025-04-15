@@ -5,7 +5,6 @@ import LandingPage from "./first/Landingpage";
 import DashboardCard from "@/components/dashboard-card";
 import Header from "@/components/ui/header";
 import Sidebar from "@/components/ui/sidebar";
-import AccountSettingsPage from "./account-settings/_components/AccountSettingsPage";
 import Explore from "@/components/ui/explore";
 import ViewProfile from "@/components/view-profile";
 import { Creator } from "@/lib/types";
@@ -38,7 +37,6 @@ export default function DashboardPage() {
 
         <div className="flex-1 p-6">
           {activePage === "home" && <DashboardCard />}
-          {activePage === "account-settings" && <AccountSettingsPage />}
           {activePage === "explore" && (
             <Explore handleViewProfile={handleViewProfile} />
           )}

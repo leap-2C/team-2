@@ -11,7 +11,6 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
     { label: "Home", key: "home" },
     { label: "Explore", key: "explore" },
     { label: "View Page", key: "view-page" },
-    { label: "Account Settings", key: "account-settings" },
   ];
 
   return (
