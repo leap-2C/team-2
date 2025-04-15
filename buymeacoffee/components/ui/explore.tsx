@@ -37,14 +37,18 @@ export default function Explore({
   }, []);
 
   const getValidImageUrl = (url: string | undefined) => {
-    if (!url) return "/default-avatar.svg";
-    try {
-      new URL(url);
-      return url.startsWith("/") ? url : `/${url}`;
-    } catch {
-      return "/default-avatar.svg";
+    if (!url) return "/default-avatar.svg"; 
+  
+
+    const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com/;
+    if (cloudinaryUrlPattern.test(url)) {
+      return url;
     }
+  
+
+    return "/default-avatar.svg";
   };
+  
 
   const creatorsData = usersData.map((user) => ({
     name: user.username,
@@ -55,6 +59,9 @@ export default function Explore({
     url: user.profile?.socialMediaUrl || "#",
     supporters: [],
   }));
+
+  console.log("Creators Data:", creatorsData);
+  
 
   const filteredCreators = creatorsData.filter((creator) =>
     creator.name.toLowerCase().includes(search.toLowerCase())
