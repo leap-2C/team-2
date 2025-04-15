@@ -11,10 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import Image from "next/image";
 import { Camera } from "lucide-react";
-
+import { sendRequest } from "@/lib/sendRequest";
+import { useToken } from "@/hooks/TokenContext";
+import { toast } from "react-toastify";
 
 const ProfileSettings = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { token } = useToken();
 
   const handleImageUpload = (result: CloudinaryUploadWidgetInfo) => {
     const info = result?.info as { secure_url?: string };
@@ -36,8 +39,37 @@ const ProfileSettings = () => {
         .url("Invalid URL format")
         .required("Social link is required"),
     }),
-    onSubmit: (values) => {
-      console.log("Submitted:", { ...values, imageUrl });
+    onSubmit: async (values) => {
+      if (!imageUrl) {
+        toast.error("Please upload a profile image");
+        return;
+      }
+
+      try {
+        const res = await sendRequest.put(
+          "/profile/update",
+          {
+            aboutMe: values.about,
+            avatarImage: imageUrl,
+            socialMediaUrl: values.socialLink,
+            backgroundImage: "", 
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 200) {
+          toast.success("Profile updated successfully!");
+        } else {
+          toast.error("Something went wrong.");
+        }
+      } catch (err: any) {
+        console.error("Profile update error:", err);
+        toast.error(err?.response?.data?.error || "Profile update failed");
+      }
     },
   });
 
@@ -45,6 +77,7 @@ const ProfileSettings = () => {
     formik.values.name &&
     formik.values.about &&
     formik.values.socialLink &&
+    imageUrl &&
     !formik.errors.name &&
     !formik.errors.about &&
     !formik.errors.socialLink;
