@@ -16,7 +16,7 @@ import { useUser } from "@/hooks/UserContext";
 
 export default function DashboardCard() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const { userData } = useUser();
+  const { userData, userLoading } = useUser();
 
   const filteredTransactions = selectedAmount
     ? userData?.donationsReceived?.filter(
@@ -34,6 +34,18 @@ export default function DashboardCard() {
   useEffect(() => {
     if (loading || !token) return;
   }, [token, loading]);
+
+  if (userLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div className="flex flex-col items-center gap-4">
+          
+          <div className="text-6xl animate-bounce">🚀</div>
+          <p className="text-gray-500 text-lg font-medium">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

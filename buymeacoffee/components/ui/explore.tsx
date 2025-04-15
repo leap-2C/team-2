@@ -36,17 +36,17 @@ export default function Explore({
     fetchExplore();
   }, []);
 
-  const getValidImageUrl = (url: string | undefined) => {
-    if (!url) return "/default-avatar.svg"; 
   
+  const getValidImageUrl = (url: string | undefined) => {
+    if (!url || url === "null" || url === "undefined") {
+      return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
+    }
 
     const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com/;
     if (cloudinaryUrlPattern.test(url)) {
       return url;
     }
-  
-
-    return "/default-avatar.svg";
+    return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
   };
   
 
