@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { sendRequest } from "@/lib/sendRequest";
 
 const SignUpSecondStep = ({
   username,
@@ -24,7 +25,7 @@ const SignUpSecondStep = ({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       setError("Please fill all fields");
       return;
@@ -32,14 +33,14 @@ const SignUpSecondStep = ({
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:9000/user/signup", {
+      const response = await sendRequest.post("/user/signup", {
         username,
         email,
         password,
       });
-      
+
       if (response.data.success) {
-        toast("Sign up successful", {type: "success"});
+        toast("Sign up successful", { type: "success" });
         router.push("/login");
       }
     } catch (err: any) {

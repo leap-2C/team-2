@@ -2,8 +2,8 @@ import { Prisma } from "@prisma/client";
 import { Router } from "express";
 import { updateProfile } from "../controller/profile/update-profile";
 
-const profileRouter = Router();
+export const profileRouter = Router();
 
-profileRouter.put("/:id", async (req, res) => {
+profileRouter.put("/update", async (req, res) => {
   await updateProfile(req, res);
 });

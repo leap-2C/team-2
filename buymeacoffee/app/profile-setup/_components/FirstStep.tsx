@@ -8,11 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useToken } from "@/hooks/TokenContext";
+import { sendRequest } from "@/lib/sendRequest";
 
-const FirstStep = ({ onNext }: { onNext: () => void }) => {
+const FirstStep = ({
+  onNext,
+  userId,
+}: {
+  onNext: () => void;
+  userId: string;
+}) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { token } = useToken();
@@ -37,21 +43,19 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
       }
 
       setIsSubmitting(true);
-      
-      try {    
-        const response = await axios.post(
-          "http://localhost:9000/user/profile", 
+
+      try {
+        const response = await sendRequest.post(
+          "/user/profile",
           {
-            name: values.name,
             aboutMe: values.about,
             avatarImage: imagePreview,
-            socialMediaUrl: values.socialLink
-          }, 
+            socialMediaUrl: values.socialLink,
+          },
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+            },
           }
         );
 
@@ -61,17 +65,7 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
         }
       } catch (error: any) {
         console.error("Profile creation error:", error);
-        let errorMessage = "Failed to create profile";
-        
-        if (error.response) {
-          if (error.response.status === 401) {
-            errorMessage = "Session expired. Please log in again.";
-          } else if (error.response.data?.error) {
-            errorMessage = error.response.data.error;
-          }
-        }
-        
-        toast.error(errorMessage);
+        toast.error(error.response?.data?.error || "Failed to create profile");
       } finally {
         setIsSubmitting(false);
       }
@@ -90,30 +84,19 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-6">
-        <h2 className="text-2xl font-semibold text-center">Set Up Your Profile</h2>
+        <h2 className="text-2xl font-semibold text-center">
+          Set Up Your Profile
+        </h2>
 
         <div className="flex flex-col items-center space-y-4">
           {/* Avatar Upload */}
           <CldUploadWidget
             uploadPreset="ml_default"
-            options={{
-              sources: ['local', 'url', 'camera'],
-              multiple: false,
-              maxFiles: 1,
-              cropping: true,
-              croppingAspectRatio: 1,
-              croppingShowDimensions: true
-            }}
-            onSuccess={(result) => {
-              const info = result.info as CloudinaryUploadWidgetInfo;
-              if (info.secure_url) {
+            onSuccess={(result: CloudinaryUploadWidgetInfo) => {
+              const info = result?.info as { secure_url?: string };
+              if (info?.secure_url) {
                 setImagePreview(info.secure_url);
-                toast.success("Image uploaded successfully");
               }
-            }}
-            onError={(error) => {
-              console.error("Upload error:", error);
-              toast.error("Failed to upload image");
             }}
           >
             {({ open }) => (
@@ -148,10 +131,11 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter your name"
-                disabled={isSubmitting}
               />
               {formik.touched.name && formik.errors.name && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.name}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.name}
+                </p>
               )}
             </div>
 
@@ -165,10 +149,11 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
                 onBlur={formik.handleBlur}
                 placeholder="Tell us about yourself"
                 rows={3}
-                disabled={isSubmitting}
               />
               {formik.touched.about && formik.errors.about && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.about}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.about}
+                </p>
               )}
             </div>
 
@@ -182,10 +167,11 @@ const FirstStep = ({ onNext }: { onNext: () => void }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="https://your-social.com"
-                disabled={isSubmitting}
               />
               {formik.touched.socialLink && formik.errors.socialLink && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.socialLink}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.socialLink}
+                </p>
               )}
             </div>
 
