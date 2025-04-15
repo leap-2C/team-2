@@ -50,3 +50,11 @@ export interface FetchedUser {
     socialMediaUrl: string;
   } | null;
 }
+
+type LandingPageProps = {
+  setActivePage: (page: string) => void;
+};
+
+export default function LandingPage({ setActivePage }: LandingPageProps) {
+  // ...
+}

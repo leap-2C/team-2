@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/ui/header";
+import LandingPage from "./first/Landingpage";
 import DashboardCard from "@/components/dashboard-card";
+import Header from "@/components/ui/header";
 import Sidebar from "@/components/ui/sidebar";
 import AccountSettingsPage from "./account-settings/_components/AccountSettingsPage";
 import Explore from "@/components/ui/explore";
@@ -11,13 +12,16 @@ import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
 
 export default function DashboardPage() {
-  const [activePage, setActivePage] = useState("home");
+  const [activePage, setActivePage] = useState("landing");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
-
   const handleViewProfile = (creator: Creator) => {
     setSelectedCreator(creator);
     setActivePage("profile");
   };
+
+  if (activePage === "landing") {
+    return <LandingPage setActivePage={setActivePage} />;
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -38,7 +42,6 @@ export default function DashboardPage() {
           {activePage === "explore" && (
             <Explore handleViewProfile={handleViewProfile} />
           )}
-
           {activePage === "profile" && selectedCreator && (
             <ViewProfile creator={selectedCreator} />
           )}
