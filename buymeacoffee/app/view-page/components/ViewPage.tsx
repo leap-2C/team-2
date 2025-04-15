@@ -1,12 +1,14 @@
-import { useState } from "react"
-import CoverImageUploader from "./CoverImageUploader"
-import ProfileCard from "./ProfileCard"
-import SocialMediaCard from "./SocialMediaCard"
-import SupportersCard from "./SupportersCard"
-import DonationCard from "./DonationCard"
+import { useState } from "react";
+import CoverImageUploader from "./CoverImageUploader";
+import ProfileCard from "./ProfileCard";
+import SocialMediaCard from "./SocialMediaCard";
+import SupportersCard from "./SupportersCard";
+import PasswordUpdate from "./Password-update";
+import PaymentDetail from "./Payment-detail";
+import SuccessMessageSettings from "./SuccessMessage";
 
 const ViewPage = () => {
-  const [coverImage, setCoverImage] = useState<string | null>(null)
+  const [coverImage, setCoverImage] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-muted py-10">
@@ -22,11 +24,19 @@ const ViewPage = () => {
             <SocialMediaCard />
             <SupportersCard />
           </div>
-          <DonationCard />
+
+          <div className="space-y-4">
+            <PasswordUpdate />
+            <PaymentDetail
+              onBack={() => console.log("Back pressed")}
+              onNext={() => console.log("Next pressed")}
+            />
+            <SuccessMessageSettings />
+          </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ViewPage
+export default ViewPage;

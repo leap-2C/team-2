@@ -27,7 +27,6 @@ const SuccessMessageSettings = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-       
           <Label htmlFor="message">Confirmation message</Label>
           <Textarea
             id="message"
@@ -36,9 +35,7 @@ const SuccessMessageSettings = () => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          {error && (
-            <p className="text-sm text-red-500 mt-1">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
         </div>
         <Button onClick={handleSave}>Save changes</Button>
       </CardContent>
