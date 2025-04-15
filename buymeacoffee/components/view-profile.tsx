@@ -16,46 +16,34 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { token } = useToken();
+  const recipientUsername = creator.name;
 
-  const handleDonate = async () => {
+  const handleDonation = async () => {
+    if (!recipientUsername) return;
     setIsLoading(true);
-    
     try {
-      const response = await sendRequest.post("/user/donation", {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: {
+      const res = await sendRequest.post(
+        "/user/donation",
+        {
           amount,
-          recipientUsername: creator.username,
-          message
+          recipientUsername,
+          specialMessage: message,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-
-      if (response.status === 401) {
-        toast.error('Please log in to donate.');
-        router.push("/login");
-        return;
-      }
-
-      if (response.status === 400) {
-        throw new Error(response.error || 'Donation failed');
-      }
-
-      toast.success(
-        response.isGuest 
-          ? `Thanks for your $${amount} support as a guest!` 
-          : `Thank you for your $${amount} donation!`
       );
 
-      
-      router.refresh();
-      
+      if (res.status === 201) {
+        toast("Donation sent successfully!", { type: "success" });
+        setAmount(1);
+        setMessage("");
+      }
     } catch (error) {
-      console.error("Donation error:", error);
-      toast.error(error instanceof Error ? error.message : 'Donation failed');
-    } finally {
+      console.error("Error sending donation:", error);
+      toast("Failed to send donation. Please try again.", { type: "error" });
       setIsLoading(false);
     }
   };
@@ -136,6 +124,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                   key={val}
                   variant={amount === val ? "default" : "outline"}
                   onClick={() => setAmount(val)}
+                  value={amount}
                 >
                   ${val}
                 </Button>
@@ -149,9 +138,9 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
               className="min-h-[100px]"
             />
 
-            <Button 
-              className="w-full" 
-              onClick={handleDonate}
+            <Button
+              className="w-full"
+              onClick={handleDonation}
               disabled={isLoading}
             >
               {isLoading ? "Processing..." : "Support"}
