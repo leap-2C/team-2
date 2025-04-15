@@ -43,6 +43,8 @@ const FirstStep = ({
       }
 
       setIsSubmitting(true);
+      console.log("Request sent to backend");
+      
 
       try {
         const response = await sendRequest.post(
@@ -96,6 +98,8 @@ const FirstStep = ({
               const info = result?.info as { secure_url?: string };
               if (info?.secure_url) {
                 setImagePreview(info.secure_url);
+                console.log("Image uploaded successfully:", info.secure_url);
+                
               }
             }}
           >

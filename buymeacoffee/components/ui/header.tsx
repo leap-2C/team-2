@@ -2,15 +2,27 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Router } from "lucide-react";
 import { useUser } from "@/hooks/UserContext";
-
+import { LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { userData } = useUser();
+  const router = useRouter();
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  const handleLogOut = () => {
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+      router.push("login");
+      toast("Logged out successfully", { type: "success" });
+    }
   };
 
   return (
@@ -20,7 +32,6 @@ const Header = () => {
 
         <div className="relative">
           <span className="text-xl font-medium text-black relative z-10">
-            {" "}
             Buy Me Coffee
           </span>
           <div className="absolute inset-0 w-full h-full"></div>
@@ -28,26 +39,37 @@ const Header = () => {
       </div>
 
       <div className="relative">
-        <button
-          className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded-md"
-          onClick={toggleDropdown}
-        >
-          <Image
-            src={userData?.profile?.avatarImage || "/avatar-image.svg"}
-            alt="User avatar"
-            width={30}
-            height={30}
-            className="rounded-full"
-          />
-          <h2 className="text-xs font-medium text-black"> Jake</h2>
-          <ChevronDown className="w-3 h-3 text-black" />{" "}
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded-md">
+              <Image
+                src={userData?.profile?.avatarImage || "/avatar-image.svg"}
+                alt="User avatar"
+                width={30}
+                height={30}
+                className="rounded-full"
+              />
+              <h2 className="text-xs font-medium text-black">
+                {userData?.username}
+              </h2>
+              <ChevronDown className="w-3 h-3 text-black" />
+            </button>
+          </DropdownMenuTrigger>
 
-        {isOpen && (
-          <div className="absolute right-0 mt-2 w-32 bg-white shadow-md rounded-md border">
-            <div className="p-2 text-xs">Settings (coming soon...)</div>
-          </div>
-        )}
+          <DropdownMenuContent
+            align="end"
+            side="bottom"
+            className="w-32 bg-white shadow-md rounded-md border"
+          >
+            <DropdownMenuItem
+              className="p-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-black cursor-pointer flex items-center gap-2"
+              onClick={handleLogOut}
+            >
+              <LogOut className="w-4 h-4 text-red-500" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

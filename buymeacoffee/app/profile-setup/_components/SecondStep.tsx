@@ -67,7 +67,6 @@ const SecondStep = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
 
         if (response.status === 201) {
           toast.success("Payment method saved successfully!");
-          onNext();
           push("/");
         }
       } catch (error: any) {
