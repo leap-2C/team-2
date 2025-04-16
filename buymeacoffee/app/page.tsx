@@ -21,21 +21,23 @@ export default function DashboardPage() {
   if (activePage === "landing") {
     return <LandingPage setActivePage={setActivePage} />;
   }
-
+  
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-4 sm:p-6">
       <Header />
-
-      <div className="flex flex-1">
-        <div className="w-full md:w-64 bg-white border-r p-4">
+  
+      <div className="flex flex-col sm:flex-row flex-1">
+        {/* Sidebar */}
+        <div className="w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
           <Sidebar
             activePage={activePage}
             setActivePage={setActivePage}
             setSelectedCreator={setSelectedCreator}
           />
         </div>
-
-        <div className="flex-1 p-6">
+  
+        {/* Main content */}
+        <div className="flex-1 p-0 sm:p-6 space-y-6">
           {activePage === "home" && <DashboardCard />}
           {activePage === "explore" && (
             <Explore handleViewProfile={handleViewProfile} />
@@ -48,4 +50,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+}  
