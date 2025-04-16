@@ -5,37 +5,95 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Pencil, Camera, Link } from "lucide-react";
 import Image from "next/image";
-import { CldUploadWidget } from "next-cloudinary";
-import CoverImageUploader from "./CoverImageUploader";
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
+import { sendRequest } from "@/lib/sendRequest";
+import { useToken } from "@/hooks/TokenContext";
+import { toast } from "react-toastify";
+import { useUser } from "@/hooks/UserContext";
 
 const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("Jake");
   const [bio, setBio] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null); 
   const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [socialUrl, setSocialUrl] = useState(
-    "https://buymeacoffee.com/spaceuriz44"
+  const [socialUrl, setSocialUrl] = useState("");
+  const [profilePreview, setProfilePreview] = useState<string | null>(null); 
+  const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
+    null
   );
-
-  const handleImageUpload = (result: any) => {
-    if (result?.info?.secure_url) {
-      setImageUrl(result.info.secure_url);
-    }
-  };
+  const { token } = useToken();
+  const { userData } = useUser();
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
+  };
+
+  const saveProfile = async () => {
+    try {
+      const res = await sendRequest.put(
+        "profile/update",
+        {
+          backgroundImage: coverImage,
+          avatarImage: imageUrl, 
+          socialMediaUrl: socialUrl,
+          aboutMe: bio,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        toast.success("Profile updated successfully");
+        setIsEditing(false);
+      } else {
+        toast.error("Failed to update profile");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardContent className="p-4 space-y-4">
         {isEditing && (
-          <CoverImageUploader
-            currentImage={coverImage}
-            onImageChange={(img) => setCoverImage(img)}
-          />
+          <CldUploadWidget
+            uploadPreset="ml_default"
+            onSuccess={(result: CloudinaryUploadWidgetInfo) => {
+              const info = result?.info as { secure_url?: string };
+              if (info?.secure_url) {
+                setBackgroundPreview(info.secure_url);
+                setCoverImage(info.secure_url);
+                console.log(
+                  "Cover image uploaded successfully:",
+                  info.secure_url
+                );
+              }
+            }}
+          >
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => open()}
+                className="relative w-full h-48 rounded-md overflow-hidden border-2 border-gray-300 shadow-md hover:opacity-80 transition"
+              >
+                {backgroundPreview ? (
+                  <img
+                    src={backgroundPreview}
+                    alt="Cover Image"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center w-full h-full bg-gray-100 text-gray-500 text-sm">
+                    Upload Cover Image
+                  </div>
+                )}
+              </button>
+            )}
+          </CldUploadWidget>
         )}
 
         <div className="flex justify-between items-start">
@@ -47,7 +105,7 @@ const ProfileCard = () => {
                 className="text-base font-semibold"
               />
             ) : (
-              <h2 className="font-semibold text-base">{name}</h2>
+              <h2 className="font-semibold text-base">{userData?.username}</h2>
             )}
           </div>
 
@@ -69,7 +127,14 @@ const ProfileCard = () => {
           {isEditing ? (
             <CldUploadWidget
               uploadPreset="ml_default"
-              onUpload={handleImageUpload}
+              onSuccess={(result: CloudinaryUploadWidgetInfo) => {
+                const info = result?.info as { secure_url?: string };
+                if (info?.secure_url) {
+                  setProfilePreview(info.secure_url); 
+                  setImageUrl(info.secure_url); 
+                  console.log("Profile image uploaded successfully:", info.secure_url);
+                }
+              }}
             >
               {({ open }) => (
                 <button
@@ -77,9 +142,9 @@ const ProfileCard = () => {
                   onClick={() => open()}
                   className="relative w-24 h-24 rounded-full overflow-hidden border border-gray-300 hover:opacity-80 flex items-center justify-center"
                 >
-                  {imageUrl ? (
+                  {profilePreview ? (
                     <Image
-                      src={imageUrl}
+                      src={profilePreview}
                       alt="Profile"
                       fill
                       className="object-cover"
@@ -95,10 +160,10 @@ const ProfileCard = () => {
                 </button>
               )}
             </CldUploadWidget>
-          ) : imageUrl ? (
+          ) : profilePreview ? (
             <div className="relative w-24 h-24 rounded-full overflow-hidden border border-gray-300">
               <Image
-                src={imageUrl}
+                src={profilePreview}
                 alt="Profile"
                 fill
                 className="object-cover"
@@ -116,7 +181,7 @@ const ProfileCard = () => {
           />
         ) : (
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-            {bio || "About me."}
+            {userData?.profile?.aboutMe || "No bio available"}
           </p>
         )}
 
@@ -124,7 +189,7 @@ const ProfileCard = () => {
         <div>
           <h3 className="text-sm font-medium mb-1 flex items-center gap-1">
             <Link className="w-4 h-4" />
-            Social media URL
+            {userData?.profile?.socialMediaUrl}
           </h3>
           {isEditing ? (
             <Input
@@ -146,7 +211,7 @@ const ProfileCard = () => {
 
         {isEditing && (
           <div className="pt-2">
-            <Button onClick={toggleEdit}>Save changes</Button>
+            <Button onClick={saveProfile}>Save changes</Button>
           </div>
         )}
       </CardContent>

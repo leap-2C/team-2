@@ -17,18 +17,38 @@ export const updateProfile = async (req: Request, res: Response) => {
     const userId = decoded.userId;
     const { backgroundImage, avatarImage, socialMediaUrl, aboutMe } = req.body;
 
-    const profile = await prisma.profile.update({
-      where: { id: Number(userId) },
-      data: {
-        backgroundImage,
-        avatarImage,
-        socialMediaUrl,
-        aboutMe,
-      },
+    
+    let profile = await prisma.profile.findUnique({
+      where: { userId: Number(userId) }, 
     });
+
+    
+    if (!profile) {
+      profile = await prisma.profile.create({
+        data: {
+          userId: Number(userId),
+          aboutMe,
+          avatarImage,
+          socialMediaUrl,
+          backgroundImage,
+        },
+      });
+    } else {
+
+      profile = await prisma.profile.update({
+        where: { userId: Number(userId) },
+        data: {
+          backgroundImage,
+          avatarImage,
+          socialMediaUrl,
+          aboutMe,
+        },
+      });
+    }
 
     res.status(200).json({ profile });
   } catch (error) {
-    res.status(500).json({ message: "Error updating profile", error });
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Error updating profile"});
   }
 };

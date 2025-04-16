@@ -3,11 +3,11 @@ import { Router } from "express";
 import { createBankCard } from "../controller/bankCard/create-bankCard";
 import { updateBankCard } from "../controller/bankCard/update-bankCard";
 
-const bankCardRouter = Router();
+export const bankCardRouter = Router();
 
 bankCardRouter.get("/:id", async (req, res) => {
   await createBankCard(req, res);
 });
-bankCardRouter.put("/:id", async (req, res) => {
-  await createBankCard(req, res);
+bankCardRouter.put("/update", async (req, res) => {
+  await updateBankCard(req, res);
 });
