@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { useState } from "react";
+
+import { Pencil, Save } from "lucide-react";
 
 const PaymentSettings = ({
   onBack,
@@ -59,149 +62,226 @@ const PaymentSettings = ({
     },
   });
 
+  const [isEditing, setIsEditing] = useState(false);
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+
   return (
     <form
       onSubmit={formik.handleSubmit}
       className="border rounded-lg p-6 space-y-4"
     >
-      <h3 className="text-lg font-semibold">Payment details</h3>
-
-      <div className="space-y-2">
-        <Label>Select country</Label>
-        <Select
-          value={formik.values.country}
-          onValueChange={(value) => formik.setFieldValue("country", value)}
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Payment details</h3>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-sm flex gap-1 items-center"
+          onClick={toggleEdit}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="usa">United States</SelectItem>
-            <SelectItem value="uk">United Kingdom</SelectItem>
-            <SelectItem value="mn">Mongolia</SelectItem>
-          </SelectContent>
-        </Select>
-        {formik.touched.country && formik.errors.country && (
-          <p className="text-sm text-red-500">{formik.errors.country}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>First name</Label>
-          <Input
-            name="firstName"
-            value={formik.values.firstName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {formik.touched.firstName && formik.errors.firstName && (
-            <p className="text-sm text-red-500">{formik.errors.firstName}</p>
+          {isEditing ? (
+            <>
+              <Save className="w-4 h-4" />
+              Save changes
+            </>
+          ) : (
+            <>
+              <Pencil className="w-4 h-4" />
+              Edit
+            </>
           )}
-        </div>
-        <div className="space-y-2">
-          <Label>Last name</Label>
-          <Input
-            name="lastName"
-            value={formik.values.lastName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {formik.touched.lastName && formik.errors.lastName && (
-            <p className="text-sm text-red-500">{formik.errors.lastName}</p>
-          )}
-        </div>
+        </Button>
       </div>
 
-      <div className="space-y-2">
-        <Label>Card Number</Label>
-        <Input
-          name="cardNumber"
-          placeholder="XXXX-XXXX-XXXX-XXXX"
-          value={formik.values.cardNumber}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
-        {formik.touched.cardNumber && formik.errors.cardNumber && (
-          <p className="text-sm text-red-500">{formik.errors.cardNumber}</p>
-        )}
-      </div>
-
-      <div className="flex gap-4">
-        <div className="w-1/3">
+      {isEditing ? (
+        <>
+          {/* Country */}
           <div className="space-y-2">
-            <Label>Month</Label>
-
+            <Label>Select country</Label>
             <Select
-              value={formik.values.expiryMonth}
-              onValueChange={(value) =>
-                formik.setFieldValue("expiryMonth", value)
-              }
+              value={formik.values.country}
+              onValueChange={(value) => formik.setFieldValue("country", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Month" />
+                <SelectValue placeholder="Select a country" />
               </SelectTrigger>
               <SelectContent>
-                {months.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
+                <SelectItem value="usa">United States</SelectItem>
+                <SelectItem value="uk">United Kingdom</SelectItem>
+                <SelectItem value="mn">Mongolia</SelectItem>
               </SelectContent>
             </Select>
-            {formik.touched.expiryMonth && formik.errors.expiryMonth && (
-              <p className="text-sm text-red-500">
-                {formik.errors.expiryMonth}
-              </p>
+            {formik.touched.country && formik.errors.country && (
+              <p className="text-sm text-red-500">{formik.errors.country}</p>
             )}
           </div>
-        </div>
-        <div className="w-1/3">
-          <div className="space-y-2">
-            <Label>Year</Label>
-            <Select
-              value={formik.values.expiryYear}
-              onValueChange={(value) =>
-                formik.setFieldValue("expiryYear", value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((y) => (
-                  <SelectItem key={y} value={y}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {formik.touched.expiryYear && formik.errors.expiryYear && (
-              <p className="text-sm text-red-500">{formik.errors.expiryYear}</p>
-            )}
-          </div>
-        </div>
 
-        <div className="w-1/3">
+          {/* Name */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>First name</Label>
+              <Input
+                name="firstName"
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.firstName && formik.errors.firstName && (
+                <p className="text-sm text-red-500">
+                  {formik.errors.firstName}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Last name</Label>
+              <Input
+                name="lastName"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.lastName && formik.errors.lastName && (
+                <p className="text-sm text-red-500">{formik.errors.lastName}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Card Number */}
           <div className="space-y-2">
-            <Label>CVC</Label>
+            <Label>Card Number</Label>
             <Input
-              name="cvc"
-              placeholder="CVC"
-              value={formik.values.cvc}
+              name="cardNumber"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              value={formik.values.cardNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            {formik.touched.cvc && formik.errors.cvc && (
-              <p className="text-sm text-red-500">{formik.errors.cvc}</p>
+            {formik.touched.cardNumber && formik.errors.cardNumber && (
+              <p className="text-sm text-red-500">{formik.errors.cardNumber}</p>
             )}
           </div>
-        </div>
-      </div>
 
-      <div className="pt-4 flex justify-between">
-        <Button type="submit">Save changes</Button>
-      </div>
+          {/* Expiry + CVC */}
+          <div className="flex gap-4">
+            <div className="w-1/3">
+              <div className="space-y-2">
+                <Label>Month</Label>
+                <Select
+                  value={formik.values.expiryMonth}
+                  onValueChange={(value) =>
+                    formik.setFieldValue("expiryMonth", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.expiryMonth && formik.errors.expiryMonth && (
+                  <p className="text-sm text-red-500">
+                    {formik.errors.expiryMonth}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="w-1/3">
+              <div className="space-y-2">
+                <Label>Year</Label>
+                <Select
+                  value={formik.values.expiryYear}
+                  onValueChange={(value) =>
+                    formik.setFieldValue("expiryYear", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((y) => (
+                      <SelectItem key={y} value={y}>
+                        {y}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.expiryYear && formik.errors.expiryYear && (
+                  <p className="text-sm text-red-500">
+                    {formik.errors.expiryYear}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="w-1/3">
+              <div className="space-y-2">
+                <Label>CVC</Label>
+                <Input
+                  name="cvc"
+                  placeholder="CVC"
+                  value={formik.values.cvc}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                {formik.touched.cvc && formik.errors.cvc && (
+                  <p className="text-sm text-red-500">{formik.errors.cvc}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>
+            Country:{" "}
+            {formik.values.country ? (
+              formik.values.country
+            ) : (
+              <span className="blur-[2.5px] select-none">Not provided</span>
+            )}
+          </p>
+          <p>
+            First name:{" "}
+            {formik.values.firstName ? (
+              formik.values.firstName
+            ) : (
+              <span className="blur-[2.5px] select-none">Not provided</span>
+            )}
+          </p>
+          <p>
+            Last name:{" "}
+            {formik.values.lastName ? (
+              formik.values.lastName
+            ) : (
+              <span className="blur-[2.5px] select-none">Not provided</span>
+            )}
+          </p>
+          <p>
+            Card Number:{" "}
+            {formik.values.cardNumber ? (
+              formik.values.cardNumber
+            ) : (
+              <span className="blur-[2.5px] select-none">Not provided</span>
+            )}
+          </p>
+          <p>
+            Expiry Date:{" "}
+            {formik.values.expiryMonth && formik.values.expiryYear ? (
+              `${formik.values.expiryMonth}-${formik.values.expiryYear}`
+            ) : (
+              <span className="blur-[2.5px] select-none">Not provided</span>
+            )}
+          </p>
+        </div>
+      )}
     </form>
   );
 };
