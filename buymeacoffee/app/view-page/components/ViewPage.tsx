@@ -1,16 +1,20 @@
-import { useState } from "react";
+
 import SocialMediaCard from "./SocialMediaCard";
 import SupportersCard from "./SupportersCard";
 import PaymentDetail from "./Payment-detail";
+import { useUser } from "@/hooks/UserContext";
 
 const ViewPage = () => {
+
+  const { userData } = useUser();
+
   return (
     <div className="min-h-screen bg-muted py-20 flex justify-center">
       <div className="w-full max-w-5xl px-4 space-y-10">
         {/* Cover Image */}
         <div className="w-full flex justify-center">
           <img
-            src="/logo.svg"
+            src={userData?.profile?.backgroundImage|| "/default-cover.jpg"}
             alt="Cover"
             draggable={false}
             className="w-full h-60 object-contain select-none rounded-xl"
