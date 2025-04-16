@@ -18,16 +18,16 @@ export default function DashboardCard() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const { userData, userLoading } = useUser();
 
-  const filteredTransactions = selectedAmount
-    ? userData?.donationsReceived?.filter(
-        (donation) => donation.amount === selectedAmount
-      )
-    : userData?.donationsReceived || [];
-
   const totalEarnings = userData?.donationsReceived?.reduce(
     (sum, donation) => sum + donation.amount,
     0
   );
+  const filteredTransactions =
+    (selectedAmount
+      ? userData?.donationsReceived?.filter(
+          (donation) => donation.amount === selectedAmount
+        )
+      : userData?.donationsReceived) ?? [];
 
   const { token, loading } = useToken();
 
@@ -39,9 +39,10 @@ export default function DashboardCard() {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div className="flex flex-col items-center gap-4">
-          
           <div className="text-6xl animate-bounce">🚀</div>
-          <p className="text-gray-500 text-lg font-medium">Loading your dashboard...</p>
+          <p className="text-gray-500 text-lg font-medium">
+            Loading your dashboard...
+          </p>
         </div>
       </div>
     );

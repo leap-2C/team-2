@@ -26,7 +26,9 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleLogin = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -42,15 +44,15 @@ const LoginPage = () => {
         email,
         password,
       });
-      
+
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         toast.success("Login successful");
-        
+
         if (response.data.hasProfile) {
-          router.push("/");
+          router.push("/"); // Profile байгаа бол Home хуудс руу шилжих
         } else {
-          router.push("/profile-setup"); 
+          router.push("/profile-setup"); // Profile байхгүй бол profile setup хуудс руу
         }
       }
     } catch (err) {
@@ -73,13 +75,16 @@ const LoginPage = () => {
             height={240}
             className="object-cover mb-6 rounded-[30px]"
           />
-          <p className="text-xl md:text-2xl font-bold">Fund your creative work</p>
+          <p className="text-xl md:text-2xl font-bold">
+            Fund your creative work
+          </p>
           <p className="text-sm md:text-[16px] text-center mt-3">
-            Accept support. Start a membership. Setup a shop. It's easier than you think.
+            Accept support. Start a membership. Setup a shop. It's easier than
+            you think.
           </p>
         </div>
       </div>
-      
+
       <div className="flex justify-center items-center w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-start w-full md:w-[407px]">
           <div className="py-6">
@@ -107,7 +112,7 @@ const LoginPage = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md"
                 placeholder="Enter password here"
                 value={password}
@@ -116,7 +121,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 className="absolute top-[46px] right-3 transform -translate-y-1/2"
-                onClick={() => setShowPassword((prev) => !prev)} 
+                onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
                   <EyeOff size={20} className="text-gray-600" />
