@@ -1,37 +1,36 @@
 import { useState } from "react";
-import CoverImageUploader from "./CoverImageUploader";
-import ProfileCard from "./ProfileCard";
 import SocialMediaCard from "./SocialMediaCard";
 import SupportersCard from "./SupportersCard";
-import PasswordUpdate from "./Password-update";
 import PaymentDetail from "./Payment-detail";
-import SuccessMessageSettings from "./SuccessMessage";
 
 const ViewPage = () => {
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-
   return (
-    <div className="min-h-screen bg-muted py-10">
-      <div className="max-w-6xl mx-auto px-4 space-y-6">
-        <CoverImageUploader
-          currentImage={coverImage}
-          onImageChange={(img) => setCoverImage(img)}
-        />
+    <div className="min-h-screen bg-muted py-20 flex justify-center">
+      <div className="w-full max-w-5xl px-4 space-y-10">
+        {/* Cover Image */}
+        <div className="w-full flex justify-center">
+          <img
+            src="/logo.svg"
+            alt="Cover"
+            draggable={false}
+            className="w-full h-60 object-contain select-none rounded-xl"
+          />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <ProfileCard />
+        <div className="space-y-8 flex flex-col items-center">
+          <div className="w-full max-w-3xl">
             <SocialMediaCard />
-            <SupportersCard />
           </div>
 
-          <div className="space-y-4">
-            <PasswordUpdate />
+          <div className="w-full max-w-3xl">
             <PaymentDetail
               onBack={() => console.log("Back pressed")}
               onNext={() => console.log("Next pressed")}
             />
-            <SuccessMessageSettings />
+          </div>
+
+          <div className="w-full max-w-3xl">
+            <SupportersCard />
           </div>
         </div>
       </div>
