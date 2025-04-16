@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 
@@ -51,8 +50,26 @@ export default function LandingPage({
 }: {
   setActivePage: (page: string) => void;
 }) {
+  const router = useRouter();
+
   return (
     <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-yellow-50 to-pink-100 flex flex-col items-center justify-center px-6 py-12 space-y-8">
+      {/* Login & Signup buttons */}
+      <div className="absolute top-4 right-6 flex space-x-4 z-10">
+        <button
+          onClick={() => router.push("/login")}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+        >
+          Login
+        </button>
+        <button
+          onClick={() => router.push("/signup")}
+          className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition"
+        >
+          Sign Up
+        </button>
+      </div>
+
       {/* Background effects */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-[-100px] left-[10%] w-[400px] h-[400px] bg-pink-300 rounded-full blur-3xl opacity-30 animate-pulse" />
