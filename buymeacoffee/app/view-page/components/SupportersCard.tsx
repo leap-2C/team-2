@@ -3,11 +3,12 @@ import { Heart } from "lucide-react";
 import { useUser } from "@/hooks/UserContext";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Donation } from "@/lib/types";
 
 const SupportersCard = () => {
   const { userData } = useUser();
 
-  const donations = userData?.donationsReceived || [];
+  const donations = userData?.donationsReceived as Donation[] || [];
   const hasSupporters = donations.length > 0;
   const uniqueDonors = Array.from(
     new Map(donations.map((d) => [d.donorId, d])).values()
@@ -31,16 +32,16 @@ const SupportersCard = () => {
                 >
                   {/* Avatar or initials */}
                   <div className="w-10 h-10 rounded-full bg-purple-200 overflow-hidden flex items-center justify-center text-white font-bold text-sm">
-                    {userData.profile?.avatarImage ? (
+                    {userData?.profile?.avatarImage ? (
                       <Image
-                        src={userData.profile.avatarImage}
+                        src={userData?.profile?.avatarImage}
                         alt="Supporter Avatar"
                         width={40}
                         height={40}
                         className="rounded-full object-cover"
                       />
                     ) : (
-                      userData.username?.[0]?.toUpperCase() || "?"
+                      userData?.username?.[0]?.toUpperCase() || "?"
                     )}
                   </div>
 

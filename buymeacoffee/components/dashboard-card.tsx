@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -89,7 +87,7 @@ export default function DashboardCard() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <p className="text-2xl font-bold">{totalEarnings}</p>
+          <p className="text-2xl font-bold">${totalEarnings}</p>
         </div>
 
         <Button variant="outline" className="mt-2 md:mt-0">
@@ -128,17 +126,17 @@ export default function DashboardCard() {
           </DropdownMenu>
         </div>
 
-        {filteredTransactions.map((donation, i) => (
-          <Card key={donation.id || i} className="p-4 space-y-2">
+        {filteredTransactions.map((donation) => (
+          <Card key={donation.id} className="p-4 space-y-2">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center font-medium text-sm">
-                  💰
+                  <img src={donation.donor.profile.avatarImage} alt="avatar image" />
                 </div>
                 <div>
-                  <p className="font-medium">Anonymous</p>
-                  {donation.message && (
-                    <p className="mt-1 text-sm">{donation.message}</p>
+                  <p className="font-medium">{donation.donor.username}</p>
+                  {donation.specialMessage && (
+                    <p className="mt-1 text-sm">{donation.specialMessage}</p>
                   )}
                 </div>
               </div>

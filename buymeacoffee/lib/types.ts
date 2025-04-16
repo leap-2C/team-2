@@ -31,6 +31,8 @@ export type Donation = {
   amount: number;
   message: string;
   createdAt: string;
+  donorId: number;
+  specialMessage: string | null;
 };
 
 export type UserData = {
