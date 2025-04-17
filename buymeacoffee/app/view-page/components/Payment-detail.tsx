@@ -20,6 +20,8 @@ import { sendRequest } from "@/lib/sendRequest";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
 import {toast } from "react-toastify";
+import { UserData } from "@/lib/types";
+
 
 const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) => {
   const years = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString());
@@ -29,7 +31,7 @@ const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () =>
   const { token } = useToken();
   const { userData } = useUser();
 
-  const cardData = userData?.bankCard?.[0];
+  const cardData = Array.isArray(userData?.bankCard) ? userData.bankCard[0] : undefined;
 
   const formik = useFormik({
     initialValues: {

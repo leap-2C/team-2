@@ -59,8 +59,6 @@ export default function Explore({
     url: user.profile?.socialMediaUrl || "#",
     supporters: [],
   }));
-
-  console.log("Creators Data:", creatorsData);
   
 
   const filteredCreators = creatorsData.filter((creator) =>
