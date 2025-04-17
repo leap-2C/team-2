@@ -39,7 +39,7 @@ export default function DashboardCard() {
         <div className="flex flex-col items-center gap-4">
           <div className="text-6xl animate-bounce">🚀</div>
           <p className="text-gray-500 text-lg font-medium">
-            Loading your dashboard...
+            Fetching your data...
           </p>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function DashboardCard() {
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center font-medium text-sm">
-                  <img src={donation.donor.profile.avatarImage || "/default-avatar.svg"} alt="avatar image" />
+                  <img src={donation.donor.profile.avatarImage || "/default-avatar.svg"} alt="avatar image" className="rounded-full"/>
                 </div>
                 <div>
                   <p className="font-medium">{donation.donor.username}</p>
