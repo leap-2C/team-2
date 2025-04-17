@@ -10,7 +10,7 @@ import Explore from "@/components/ui/explore";
 import ViewProfile from "@/components/view-profile";
 import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
-import { toast } from "react-toastify";
+import { Tabs } from "@/components/ui/tabs";
 
 export default function DashboardPage() {
   const [activePage, setActivePage] = useState("landing");
@@ -40,24 +40,48 @@ export default function DashboardPage() {
 
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
-    localStorage.removeItem("token");
-    toast("Successfully logged out", {type: "success"});
-    router.push("/");
+    setActivePage("landing");
+    router.push("/landing");
   };
 
-  if (!isClient) {
-    return null;
-  }
+  if (!isClient) return null;
 
   if (activePage === "landing") {
     return <LandingPage setActivePage={setActivePage} />;
   }
 
+  const tabs = [
+    {
+      title: "Home",
+      value: "home",
+      content: <DashboardCard />,
+    },
+    {
+      title: "Explore",
+      value: "explore",
+      content: <Explore handleViewProfile={handleViewProfile} />,
+    },
+    {
+      title: "Profile",
+      value: "profile",
+      content: selectedCreator ? <ViewProfile creator={selectedCreator} /> : null,
+    },
+    {
+      title: "View Page",
+      value: "view-page",
+      content: <ViewPage />,
+    },
+  ];
+
   return (
     <div className="space-y-4 p-4 sm:p-6">
       <Header handleLogout={handleLogout} />
 
-      <div className="flex flex-col sm:flex-row flex-1">
+      <div className="block sm:hidden">
+        <Tabs tabs={tabs} />
+      </div>
+
+      <div className="hidden sm:flex flex-col sm:flex-row flex-1">
         <div className="w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
           <Sidebar
             activePage={activePage}
