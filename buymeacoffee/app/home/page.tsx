@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import LandingPage from "./first/Landingpage";
+import LandingPage from "../first/Landingpage";
 import DashboardCard from "@/components/dashboard-card";
 import Header from "@/components/ui/header";
 import Sidebar from "@/components/ui/sidebar";
@@ -11,41 +10,28 @@ import ViewProfile from "@/components/view-profile";
 import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
 
-export default function DashboardPage() {
+export default function HomePage() {
   const [activePage, setActivePage] = useState("landing");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (isClient) {
-      const hasLoggedIn = localStorage.getItem("hasLoggedIn");
-      if (hasLoggedIn === "true") {
-        setActivePage("home");
-        router.push("/home");
-      }
+    const hasLoggedIn = localStorage.getItem("hasLoggedIn");
+    if (hasLoggedIn === "true") {
+      setActivePage("home");
+    } else {
+      setActivePage("landing");
     }
-  }, [isClient, router]);
+  }, []);
 
   const handleViewProfile = (creator: Creator) => {
     setSelectedCreator(creator);
     setActivePage("profile");
-    router.push("/profile");
   };
 
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
     setActivePage("landing");
-    router.push("/landing");
   };
-
-  if (!isClient) {
-    return null;
-  }
 
   if (activePage === "landing") {
     return <LandingPage setActivePage={setActivePage} />;
@@ -53,8 +39,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Header handleLogout={handleLogout} />
-
+      <Header handleLogout={handleLogout} />{" "}
       <div className="flex flex-col sm:flex-row flex-1">
         <div className="w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
           <Sidebar

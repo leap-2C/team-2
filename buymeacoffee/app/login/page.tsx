@@ -26,9 +26,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (
-    e: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -47,12 +45,13 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("hasLoggedIn", "true");
         toast.success("Login successful");
 
         if (response.data.hasProfile) {
-          router.push("/"); // Profile байгаа бол Home хуудс руу шилжих
+          router.push("/");
         } else {
-          router.push("/profile-setup"); // Profile байхгүй бол profile setup хуудс руу
+          router.push("/profile-setup");
         }
       }
     } catch (err) {
@@ -66,6 +65,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
+      {/* Left Illustration */}
       <div className="flex justify-center items-center bg-amber-400 w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-center items-center w-full md:w-[455px]">
           <Image
@@ -85,6 +85,7 @@ const LoginPage = () => {
         </div>
       </div>
 
+      {/* Right Login Form */}
       <div className="flex justify-center items-center w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-start w-full md:w-[407px]">
           <div className="py-6">
@@ -105,6 +106,7 @@ const LoginPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
             <div className="mt-4 relative">
               <label htmlFor="password" className="block text-sm font-semibold">
                 Password
@@ -130,7 +132,9 @@ const LoginPage = () => {
                 )}
               </button>
             </div>
+
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
             <div className="flex justify-between mt-6">
               <Button
                 type="submit"

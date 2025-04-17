@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { ChevronDown, Router } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { useUser } from "@/hooks/UserContext";
-import { LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,17 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-const Header = () => {
+
+interface HeaderProps {
+  handleLogout: () => void; // void буцаах хэрэгтэй
+}
+
+const Header: React.FC<HeaderProps> = ({ handleLogout }) => {
   const { userData } = useUser();
   const router = useRouter();
-
-  const handleLogOut = () => {
-    if (typeof window !== "undefined") {
-      localStorage.clear();
-      router.push("login");
-      toast("Logged out successfully", { type: "success" });
-    }
-  };
 
   return (
     <header className="w-full border-b px-4 py-2 flex items-center justify-between bg-white">
@@ -63,7 +59,7 @@ const Header = () => {
           >
             <DropdownMenuItem
               className="p-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-black cursor-pointer flex items-center gap-2"
-              onClick={handleLogOut}
+              onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 text-red-500" />
               <span>Log out</span>

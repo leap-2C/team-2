@@ -1,11 +1,9 @@
-
 import SocialMediaCard from "./SocialMediaCard";
 import SupportersCard from "./SupportersCard";
 import PaymentDetail from "./Payment-detail";
 import { useUser } from "@/hooks/UserContext";
 
 const ViewPage = () => {
-
   const { userData } = useUser();
 
   return (
@@ -14,7 +12,7 @@ const ViewPage = () => {
         {/* Cover Image */}
         <div className="w-full flex justify-center">
           <img
-            src={userData?.profile?.backgroundImage|| "/default-cover.jpg"}
+            src={userData?.profile?.backgroundImage || "galaxy.svg"}
             alt="Cover"
             draggable={false}
             className="w-full h-60 object-contain select-none rounded-xl"
