@@ -5,7 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Pencil, Camera, Link } from "lucide-react";
 import Image from "next/image";
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 import { sendRequest } from "@/lib/sendRequest";
 import { useToken } from "@/hooks/TokenContext";
 import { toast } from "react-toastify";
@@ -62,8 +65,8 @@ const ProfileCard = () => {
         {isEditing && (
           <CldUploadWidget
             uploadPreset="ml_default"
-            onSuccess={(result: CloudinaryUploadWidgetInfo) => {
-              const info = result?.info as { secure_url?: string };
+            onSuccess={(results: CloudinaryUploadWidgetResults) => {
+              const info = results?.info as { secure_url?: string };
               if (info?.secure_url) {
                 setBackgroundPreview(info.secure_url);
                 setCoverImage(info.secure_url);
@@ -143,19 +146,16 @@ const ProfileCard = () => {
         <div className="flex items-center space-x-4">
           {isEditing ? (
             <CldUploadWidget
-              uploadPreset="ml_default"
-              onSuccess={(result: CloudinaryUploadWidgetInfo) => {
-                const info = result?.info as { secure_url?: string };
-                if (info?.secure_url) {
-                  setProfilePreview(info.secure_url);
-                  setImageUrl(info.secure_url);
-                  console.log(
-                    "Profile image uploaded successfully:",
-                    info.secure_url
-                  );
-                }
-              }}
-            >
+            uploadPreset="ml_default"
+            onSuccess={(results: CloudinaryUploadWidgetResults) => {
+              const info = results.info as { secure_url?: string };
+              if (info?.secure_url) {
+                setProfilePreview(info.secure_url);
+                setImageUrl(info.secure_url);
+                console.log("Image uploaded successfully:", info.secure_url);
+              }
+            }}
+          >
               {({ open }) => (
                 <button
                   type="button"
