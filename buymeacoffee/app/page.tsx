@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
     localStorage.removeItem("token");
-    toast("Successfully logged out", {type: "success"});
+    toast("Successfully logged out", { type: "success" });
     router.push("/");
   };
 
