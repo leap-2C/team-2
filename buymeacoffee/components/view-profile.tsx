@@ -22,7 +22,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
   const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
-  )}&token${token}`;
+  )}&token=${token}`;
 
   if (!creator) {
     return (
@@ -134,6 +134,19 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                   <QRCode value={donationUrl} />
                 </div>
               )}
+
+              <div className="flex gap-2">
+                {[1, 2, 5, 10].map((val) => (
+                  <Button
+                    key={val}
+                    variant={amount === val ? "default" : "outline"}
+                    onClick={() => setAmount(val)}
+                    value={amount}
+                  >
+                    ${val}
+                  </Button>
+                ))}
+              </div>
 
               <Textarea
                 value={message}

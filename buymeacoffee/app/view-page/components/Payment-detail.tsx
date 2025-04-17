@@ -19,19 +19,37 @@ import {
 import { sendRequest } from "@/lib/sendRequest";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
-import {toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { UserData } from "@/lib/types";
+import React from "react";
+import {
+  TextRevealCard,
+  TextRevealCardDescription,
+  TextRevealCardTitle,
+} from "@/components/ui/text-reveal-card";
+import { motion } from "framer-motion";
 
-
-const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) => {
-  const years = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString());
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, "0"));
+const PaymentSettings = ({
+  onBack,
+  onNext,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+}) => {
+  const years = Array.from({ length: 10 }, (_, i) =>
+    (new Date().getFullYear() + i).toString()
+  );
+  const months = Array.from({ length: 12 }, (_, i) =>
+    (i + 1).toString().padStart(2, "0")
+  );
 
   const [isEditing, setIsEditing] = useState(false);
   const { token } = useToken();
   const { userData } = useUser();
 
-  const cardData = Array.isArray(userData?.bankCard) ? userData.bankCard[0] : undefined;
+  const cardData = Array.isArray(userData?.bankCard)
+    ? userData.bankCard[0]
+    : undefined;
 
   const formik = useFormik({
     initialValues: {
@@ -45,7 +63,7 @@ const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () =>
       expiryYear: cardData
         ? new Date(cardData.expirationDate).getFullYear() + ""
         : "",
-      cvc: "", 
+      cvc: "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -53,7 +71,10 @@ const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () =>
       firstName: Yup.string().required("First name is required"),
       lastName: Yup.string().required("Last name is required"),
       cardNumber: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "Must be in XXXX-XXXX-XXXX-XXXX format")
+        .matches(
+          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
+          "Must be in XXXX-XXXX-XXXX-XXXX format"
+        )
         .required("Card number is required"),
       expiryMonth: Yup.string().required("Month is required"),
       expiryYear: Yup.string().required("Year is required"),
@@ -99,7 +120,12 @@ const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () =>
     <form onSubmit={formik.handleSubmit} className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Bank Card</h3>
-        <Button type={isEditing ? "submit" : "button"} size="sm" variant="ghost" onClick={toggleEdit}>
+        <Button
+          type={isEditing ? "submit" : "button"}
+          size="sm"
+          variant="ghost"
+          onClick={toggleEdit}
+        >
           {isEditing ? (
             <>
               <Save className="w-4 h-4 mr-1" />
@@ -115,24 +141,64 @@ const PaymentSettings = ({ onBack, onNext }: { onBack: () => void; onNext: () =>
       </div>
 
       {/* CARD LOOK */}
-      <div className="bg-gradient-to-br from-indigo-600 to-purple-500 text-white p-6 rounded-lg shadow-lg max-w-md space-y-4">
-        <p className="text-sm">{formik.values.country}</p>
-        <h2 className="text-xl tracking-widest font-mono">{formik.values.cardNumber || "XXXX-XXXX-XXXX-XXXX"}</h2>
-        <div className="flex justify-between text-sm">
-          <div>
-            <p className="text-xs"></p>
-            <p className="font-medium">
-              {formik.values.firstName || "First"} {formik.values.lastName || "Last"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs">Expires</p>
-            <p className="font-medium">
-              {formik.values.expiryMonth || "MM"}/{formik.values.expiryYear?.slice(-2) || "YY"}
-            </p>
-          </div>
+      {!isEditing && (
+        <div className="flex items-center justify-center h-[20rem] rounded-2xl w-full">
+          {/* Blurred Card Container */}
+          <motion.div
+            initial={{ filter: "blur(8px)" }}
+            whileHover={{ filter: "blur(0px)" }}
+            transition={{ duration: 0.3 }}
+            className="relative h-64 w-96 rounded-xl bg-gradient-to-br from-blue-600 to-purple-700 p-6 shadow-2xl overflow-hidden"
+          >
+            {/* Blur overlay */}
+            <motion.div
+              initial={{ opacity: 0.7 }}
+              whileHover={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            />
+
+            {/* VISA Logo */}
+            <div className="text-right text-white font-bold text-2xl italic">
+              VISA
+            </div>
+
+            {/* Chip */}
+            <div className="mt-8 h-10 w-14 rounded bg-yellow-400/20 flex items-center justify-center">
+              <div className="h-6 w-8 rounded-sm bg-yellow-400/40" />
+            </div>
+
+            {/* Card Number */}
+            <div className="mt-6 font-mono text-white text-xl tracking-widest">
+              4242 4242 4242 4242
+            </div>
+
+            {/* Card Details */}
+            <div className="mt-6 flex justify-between text-white text-sm">
+              <div>
+                <div className="text-neutral-300 text-xs">CARD HOLDER</div>
+                <div className="font-medium">JOHN DOE</div>
+              </div>
+              <div>
+                <div className="text-neutral-300 text-xs">EXPIRES</div>
+                <div className="font-medium">12/25</div>
+              </div>
+              <div>
+                <div className="text-neutral-300 text-xs">CVV</div>
+                <div className="font-medium">•••</div>
+              </div>
+            </div>
+
+            {/* Hover hint */}
+            <motion.div
+              initial={{ opacity: 1 }}
+              whileHover={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center text-white/50 text-sm"
+            >
+              Hover to reveal details
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
+      )}
 
       {/* FORM FIELDS */}
       {isEditing && (
