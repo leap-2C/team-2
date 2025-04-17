@@ -29,86 +29,78 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      {/* Left Column - Creator Info */}
-      <div className="space-y-4">
-        <Card>
-          <CardContent className="p-4">
-            <h2 className="text-xl font-bold">{creator.name}</h2>
-            <p className="text-sm text-muted-foreground">
-              About {creator.name}
-            </p>
-            <p className="mt-2">{creator.description}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Social media URL
-            </h3>
-            <a
-              href={creator.url}
-              className="text-blue-600 underline break-all"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {creator.url}
-            </a>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 space-y-4">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Recent Supporters
-            </h3>
-            {creator.supporters && creator.supporters.length > 0 ? (
-              creator.supporters.map((s: Supporter, index: number) => (
-                <div key={index} className="text-sm">
-                  <p>
-                    <strong>{s.name}</strong> bought ${s.amount} coffee
-                  </p>
-                  <p className="text-muted-foreground">{s.message}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Be the first one to support {creator.name}.
-              </p>
-            )}
-            <Button variant="ghost">See more</Button>
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      {/* Background image */}
+      <div className="relative w-full h-52 md:h-64 lg:h-72 overflow-hidden rounded-xl">
+        <img
+          src="/galaxy.svg"
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       </div>
 
-      {/* Right Column - Donation Form */}
-      <div>
-        <Card>
-          <CardContent className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold">
-              Buy {creator.name} a Coffee
-            </h2>
+      {/* Main content */}
+      <div className="grid md:grid-cols-2 gap-6 px-4 md:px-0">
+        {/* Left Column - Creator Info */}
+        <div className="space-y-4">
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="text-xl font-bold">{creator.name}</h2>
+              <p className="text-sm text-muted-foreground">
+                About {creator.name}
+              </p>
+              <p className="mt-2">{creator.description}</p>
+            </CardContent>
+          </Card>
 
-            <div className="flex gap-2">
-              {[1, 2, 5, 10].map((val) => (
-                <Button
-                  key={val}
-                  variant={amount === val ? "default" : "outline"}
-                  onClick={() => setAmount(val)}
-                  value={amount}
-                >
-                  ${val}
-                </Button>
-              ))}
-            </div>
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Social media URL
+              </h3>
+              <a
+                href={creator.url}
+                className="text-blue-600 underline break-all"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {creator.url}
+              </a>
+            </CardContent>
+          </Card>
 
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Say something nice..."
-              className="min-h-[100px]"
-            />
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Recent Supporters
+              </h3>
+              {creator.supporters && creator.supporters.length > 0 ? (
+                creator.supporters.map((s: Supporter, index: number) => (
+                  <div key={index} className="text-sm">
+                    <p>
+                      <strong>{s.name}</strong> bought ${s.amount} coffee
+                    </p>
+                    <p className="text-muted-foreground">{s.message}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Be the first one to support {creator.name}.
+                </p>
+              )}
+              <Button variant="ghost">See more</Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Donation Form */}
+        <div>
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold">
+                Buy {creator.name} a Coffee
+              </h2>
+
 
             <Button
               className="w-full"
@@ -123,13 +115,30 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
               </div>
             )}
 
-            {!token && (
-              <p className="text-sm text-muted-foreground text-center">
-                You're supporting as a guest
-              </p>
-            )}
-          </CardContent>
-        </Card>
+
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Say something nice..."
+                className="min-h-[100px]"
+              />
+
+              <Button
+                className="w-full"
+                onClick={handleDonation}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Support"}
+              </Button>
+
+              {!token && (
+                <p className="text-sm text-muted-foreground text-center">
+                  You're supporting as a guest
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
