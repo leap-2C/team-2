@@ -18,7 +18,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
   const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
-  )}&token${token}`;
+  )}&token=${token}`;
 
   if (!creator) {
     return (
@@ -101,20 +101,31 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                 Buy {creator.name} a Coffee
               </h2>
 
+              <Button
+                className="w-full"
+                onClick={() => setShowQr(true)}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Support"}
+              </Button>
+              {showQr && (
+                <div className="flex justify-center pt-4">
+                  <QRCode value={donationUrl} />
+                </div>
+              )}
 
-            <Button
-              className="w-full"
-              onClick={() => setShowQr(true)}
-              disabled={isLoading}
-            >
-              {isLoading ? "Processing..." : "Support"}
-            </Button>
-            {showQr && (
-              <div className="flex justify-center pt-4">
-                <QRCode value={donationUrl} />
+              <div className="flex gap-2">
+                {[1, 2, 5, 10].map((val) => (
+                  <Button
+                    key={val}
+                    variant={amount === val ? "default" : "outline"}
+                    onClick={() => setAmount(val)}
+                    value={amount}
+                  >
+                    ${val}
+                  </Button>
+                ))}
               </div>
-            )}
-
 
               <Textarea
                 value={message}
@@ -125,7 +136,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
               <Button
                 className="w-full"
-                onClick={handleDonation}
+                onClick={() => setShowQr(true)}
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Support"}

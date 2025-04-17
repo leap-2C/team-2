@@ -15,10 +15,10 @@ const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("Jake");
   const [bio, setBio] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null); 
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [socialUrl, setSocialUrl] = useState("");
-  const [profilePreview, setProfilePreview] = useState<string | null>(null); 
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
     null
   );
@@ -35,7 +35,7 @@ const ProfileCard = () => {
         "profile/update",
         {
           backgroundImage: coverImage,
-          avatarImage: imageUrl, 
+          avatarImage: imageUrl,
           socialMediaUrl: socialUrl,
           aboutMe: bio,
         },
@@ -105,7 +105,24 @@ const ProfileCard = () => {
                 className="text-base font-semibold"
               />
             ) : (
-              <h2 className="font-semibold text-base">{userData?.username}</h2>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-purple-200 overflow-hidden flex items-center justify-center text-white font-bold text-sm">
+                  {userData?.profile?.avatarImage ? (
+                    <Image
+                      src={userData.profile.avatarImage}
+                      alt="Supporter Avatar"
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    userData?.username?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                <h2 className="font-semibold text-base">
+                  {userData?.username}
+                </h2>
+              </div>
             )}
           </div>
 
@@ -130,9 +147,12 @@ const ProfileCard = () => {
               onSuccess={(result: CloudinaryUploadWidgetInfo) => {
                 const info = result?.info as { secure_url?: string };
                 if (info?.secure_url) {
-                  setProfilePreview(info.secure_url); 
-                  setImageUrl(info.secure_url); 
-                  console.log("Profile image uploaded successfully:", info.secure_url);
+                  setProfilePreview(info.secure_url);
+                  setImageUrl(info.secure_url);
+                  console.log(
+                    "Profile image uploaded successfully:",
+                    info.secure_url
+                  );
                 }
               }}
             >
