@@ -40,8 +40,10 @@ export default function DashboardPage() {
 
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
+
     setActivePage("landing");
     router.push("/landing");
+
   };
 
   if (!isClient) return null;
