@@ -1,6 +1,9 @@
 "use client";
 
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -44,7 +47,6 @@ const FirstStep = ({
 
       setIsSubmitting(true);
       console.log("Request sent to backend");
-      
 
       try {
         const response = await sendRequest.post(
@@ -94,12 +96,11 @@ const FirstStep = ({
           {/* Avatar Upload */}
           <CldUploadWidget
             uploadPreset="ml_default"
-            onSuccess={(result: CloudinaryUploadWidgetInfo) => {
-              const info = result?.info as { secure_url?: string };
+            onSuccess={(results: CloudinaryUploadWidgetResults) => {
+              const info = results.info as { secure_url?: string };
               if (info?.secure_url) {
                 setImagePreview(info.secure_url);
                 console.log("Image uploaded successfully:", info.secure_url);
-                
               }
             }}
           >
