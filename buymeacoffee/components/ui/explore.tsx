@@ -9,6 +9,8 @@ import Image from "next/image";
 import { Creator } from "../../lib/types";
 import { sendRequest } from "@/lib/sendRequest";
 import { FetchedUser } from "@/lib/types";
+import { Skeleton } from "./skeleton";
+import ExploreSkeleton from "../Export-skeleton";
 
 export default function Explore({
   handleViewProfile,
@@ -22,6 +24,7 @@ export default function Explore({
 
   const fetchExplore = async () => {
     try {
+      setLoading(true);
       const response = await sendRequest.get("/user/explore");
       setUsersData(response.data.data);
     } catch (err) {
@@ -36,7 +39,6 @@ export default function Explore({
     fetchExplore();
   }, []);
 
-  
   const getValidImageUrl = (url: string | undefined) => {
     if (!url || url === "null" || url === "undefined") {
       return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
@@ -48,7 +50,6 @@ export default function Explore({
     }
     return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
   };
-  
 
   const creatorsData = usersData.map((user) => ({
     name: user.username,
@@ -58,14 +59,23 @@ export default function Explore({
     description: user.profile?.aboutMe || "No description available",
     url: user.profile?.socialMediaUrl || "#",
     supporters: [],
+    donor: {
+      id: user.id,
+      username: user.username,
+      profile: {
+        avatarImage: user.profile?.avatarImage || null,
+      },
+    },
   }));
-  
 
   const filteredCreators = creatorsData.filter((creator) =>
     creator.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (loading)
+    return (
+     <ExploreSkeleton/>
+    );
   if (error)
     return <div className="p-6 text-center text-red-500">Error: {error}</div>;
   if (usersData.length === 0)
@@ -118,7 +128,7 @@ export default function Explore({
               </a>
               <Button
                 variant="outline"
-                className="mt-2 text-sm"
+                className="mt-2 text-sm cursor-pointer"
                 onClick={() => handleViewProfile(creator)}
               >
                 View profile <ExternalLink size={14} />
