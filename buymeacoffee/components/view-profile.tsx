@@ -5,48 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Creator, Supporter } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { sendRequest } from "@/lib/sendRequest";
+import QRCode from "react-qr-code";
 import { useToken } from "@/hooks/TokenContext";
 
 export default function ViewProfile({ creator }: { creator: Creator }) {
   const [amount, setAmount] = useState<number>(1);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { token } = useToken();
+  const [showQr, setShowQr] = useState(false);
   const recipientUsername = creator.name;
+  const { token } = useToken();
 
-  const handleDonation = async () => {
-    if (!recipientUsername) return;
-    setIsLoading(true);
-    try {
-      const res = await sendRequest.post(
-        "/user/donation",
-        {
-          amount,
-          recipientUsername,
-          specialMessage: message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.status === 201) {
-        toast("Donation sent successfully!", { type: "success" });
-        setAmount(1);
-        setMessage("");
-      }
-    } catch (error) {
-      console.error("Error sending donation:", error);
-      toast("Failed to send donation. Please try again.", { type: "error" });
-      setIsLoading(false);
-    }
-  };
+  const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
+    message
+  )}&token${token}`;
 
   if (!creator) {
     return (
@@ -129,18 +101,20 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                 Buy {creator.name} a Coffee
               </h2>
 
-              <div className="flex gap-2">
-                {[1, 2, 5, 10].map((val) => (
-                  <Button
-                    key={val}
-                    variant={amount === val ? "default" : "outline"}
-                    onClick={() => setAmount(val)}
-                    value={amount}
-                  >
-                    ${val}
-                  </Button>
-                ))}
+
+            <Button
+              className="w-full"
+              onClick={() => setShowQr(true)}
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Support"}
+            </Button>
+            {showQr && (
+              <div className="flex justify-center pt-4">
+                <QRCode value={donationUrl} />
               </div>
+            )}
+
 
               <Textarea
                 value={message}

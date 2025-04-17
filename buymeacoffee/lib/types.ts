@@ -12,6 +12,7 @@ export type Creator = {
   description: string;
   url: string;
   supporters: Supporter[];
+  donor: Supporter
 };
 
 export type UserProfile = {
@@ -31,6 +32,15 @@ export type Donation = {
   amount: number;
   message: string;
   createdAt: string;
+  donorId: number;
+  specialMessage: string | null;
+  donor: {
+    id: number;
+    username: string;
+    profile: {
+      avatarImage: string | null;
+    };
+  };
 };
 
 export type UserData = {
@@ -40,6 +50,7 @@ export type UserData = {
   createdAt: string;
   profile: UserProfile;
   donationsReceived: Donation[];
+  bankCard: BankCard | null;
 };
 
 export interface FetchedUser {
@@ -50,6 +61,14 @@ export interface FetchedUser {
     socialMediaUrl: string;
   } | null;
 }
+
+export type BankCard = {
+  firstName: string;
+  lastName: string;
+  cardNumber: string;
+  expirationDate: string;
+  cvc: string;
+};
 
 type LandingPageProps = {
   setActivePage: (page: string) => void;
