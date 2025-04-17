@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { sendRequest } from "@/lib/sendRequest";
 import { toast } from "react-toastify";
-import { useToken } from "@/hooks/TokenContext";
 
 export default function ConfirmDonationPage() {
   const searchParams = useSearchParams();
-  const { token } = useToken();
 
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -19,7 +17,8 @@ export default function ConfirmDonationPage() {
   const amount = searchParams.get("amount") || "0";
   const recipientUsername = searchParams.get("user") || "";
   const message = searchParams.get("message") || "";
-
+  const token = searchParams.get("token") || "";
+  
   const handleConfirm = async () => {
     if (!recipientUsername || !amount) return;
 

@@ -16,9 +16,9 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
   const recipientUsername = creator.name;
   const { token } = useToken();
 
-  const donationUrl = `http://192.168.1.12:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
+  const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
-  )}`;
+  )}&token${token}`;
 
   if (!creator) {
     return (
