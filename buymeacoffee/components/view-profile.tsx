@@ -7,6 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Creator, Supporter } from "@/lib/types";
 import QRCode from "react-qr-code";
 import { useToken } from "@/hooks/TokenContext";
+import { useUser } from "@/hooks/UserContext";
+import { UserData } from "@/lib/types";
+import Image from "next/image";
 
 export default function ViewProfile({ creator }: { creator: Creator }) {
   const [amount, setAmount] = useState<number>(1);
@@ -15,6 +18,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
   const [showQr, setShowQr] = useState(false);
   const recipientUsername = creator.name;
   const { token } = useToken();
+  const { userData } = useUser() as { userData: UserData };
 
   const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
@@ -74,18 +78,35 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
               <h3 className="text-sm font-medium text-muted-foreground">
                 Recent Supporters
               </h3>
-              {creator.supporters && creator.supporters.length > 0 ? (
-                creator.supporters.map((s: Supporter, index: number) => (
-                  <div key={index} className="text-sm">
-                    <p>
-                      <strong>{s.name}</strong> bought ${s.amount} coffee
-                    </p>
-                    <p className="text-muted-foreground">{s.message}</p>
+              {userData?.donationsReceived?.length > 0 ? (
+                userData.donationsReceived.map((donation) => (
+                  <div key={donation.id} className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={
+                          donation.donor.profile.avatarImage ||
+                          "/avatar-image.svg"
+                        }
+                        alt={`${donation.donor.username}'s avatar`}
+                        width={24}
+                        height={24}
+                        className="rounded-full"
+                      />
+                      <p>
+                        <strong>{donation.donor.username}</strong>
+                        <p>${donation.amount}</p>
+                      </p>
+                    </div>
+                    {donation.specialMessage && (
+                      <p className="text-muted-foreground mt-1 pl-8">
+                        "{donation.specialMessage}"
+                      </p>
+                    )}
                   </div>
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Be the first one to support {creator.name}.
+                  Be the first one to support {userData.username}.
                 </p>
               )}
               <Button variant="ghost">See more</Button>
@@ -101,20 +122,18 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                 Buy {creator.name} a Coffee
               </h2>
 
-
-            <Button
-              className="w-full"
-              onClick={() => setShowQr(true)}
-              disabled={isLoading}
-            >
-              {isLoading ? "Processing..." : "Support"}
-            </Button>
-            {showQr && (
-              <div className="flex justify-center pt-4">
-                <QRCode value={donationUrl} />
-              </div>
-            )}
-
+              <Button
+                className="w-full"
+                onClick={() => setShowQr(true)}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Support"}
+              </Button>
+              {showQr && (
+                <div className="flex justify-center pt-4">
+                  <QRCode value={donationUrl} />
+                </div>
+              )}
 
               <Textarea
                 value={message}
@@ -125,7 +144,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
               <Button
                 className="w-full"
-                onClick={handleDonation}
+                onClick={() => setShowQr(true)}
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Support"}

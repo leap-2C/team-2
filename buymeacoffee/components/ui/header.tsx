@@ -10,16 +10,17 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+
 
 interface HeaderProps {
-  handleLogout: () => void; // void буцаах хэрэгтэй
+  handleLogout: () => void; 
 }
 
 const Header: React.FC<HeaderProps> = ({ handleLogout }) => {
   const { userData } = useUser();
-  const router = useRouter();
+  
+
+
 
   return (
     <header className="w-full border-b px-4 py-2 flex items-center justify-between bg-white">

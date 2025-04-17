@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { sendRequest } from "@/lib/sendRequest";
 import { useToken } from "@/hooks/TokenContext";
 import { UserData } from "@/lib/types";
+import { log } from "console";
 
 interface UserContextType {
   userData: UserData | null;
@@ -19,7 +20,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [userLoading, setUserLoading] = useState(false);
 
   useEffect(() => {
-    if (!token || loading) return;
+    if (!token || loading)return;
     setUserLoading(true);
   
     const fetchUser = async () => {

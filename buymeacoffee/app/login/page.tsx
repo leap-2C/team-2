@@ -7,16 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { sendRequest } from "@/lib/sendRequest";
 import { Eye, EyeOff } from "lucide-react";
-
-interface LoginResponse {
-  token: string;
-  hasProfile: boolean;
-  user: {
-    id: string;
-    email: string;
-    username: string;
-  };
-}
+import { LoginResponse } from "@/lib/types";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

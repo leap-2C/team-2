@@ -10,6 +10,7 @@ import Explore from "@/components/ui/explore";
 import ViewProfile from "@/components/view-profile";
 import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
+import { toast } from "react-toastify";
 
 export default function DashboardPage() {
   const [activePage, setActivePage] = useState("landing");
@@ -39,8 +40,9 @@ export default function DashboardPage() {
 
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
-    setActivePage("landing");
-    router.push("/landing");
+    localStorage.removeItem("token");
+    toast("Successfully logged out", {type: "success"});
+    router.push("/");
   };
 
   if (!isClient) {
