@@ -11,6 +11,7 @@ import ViewProfile from "@/components/view-profile";
 import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
 import { toast } from "react-toastify";
+import { Tabs } from "@/components/ui/tabs";
 
 export default function DashboardPage() {
   const [activePage, setActivePage] = useState("landing");
@@ -35,13 +36,12 @@ export default function DashboardPage() {
   const handleViewProfile = (creator: Creator) => {
     setSelectedCreator(creator);
     setActivePage("profile");
-
   };
 
   const handleLogout = (): void => {
     localStorage.setItem("hasLoggedIn", "false");
     localStorage.removeItem("token");
-    toast("Successfully logged out", {type: "success"});
+    toast("Successfully logged out", { type: "success" });
     router.push("/");
   };
 
@@ -57,8 +57,18 @@ export default function DashboardPage() {
     <div className="space-y-4 p-4 sm:p-6">
       <Header handleLogout={handleLogout} />
 
+      <Tabs
+        tabs={[
+          { label: "Home", value: "home" },
+          { label: "Explore", value: "explore" },
+          { label: "View", value: "view-page" },
+        ]}
+        activeTab={activePage}
+        onTabChange={setActivePage}
+      />
+
       <div className="flex flex-col sm:flex-row flex-1">
-        <div className="w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
+        <div className="hidden sm:block w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
           <Sidebar
             activePage={activePage}
             setActivePage={setActivePage}
