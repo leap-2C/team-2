@@ -30,7 +30,7 @@ const SignUpSecondStep = ({
 
   const passwordRules = [
     {
-      label: "At least 6 characters",
+      label: "At least 6 characterss",
       test: (val: string) => val.length >= 6,
     },
     {
