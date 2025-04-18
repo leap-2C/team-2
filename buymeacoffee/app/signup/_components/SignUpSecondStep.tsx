@@ -30,8 +30,8 @@ const SignUpSecondStep = ({
 
   const passwordRules = [
     {
-      label: "At least 8 characters",
-      test: (val: string) => val.length >= 8,
+      label: "At least 6 characters",
+      test: (val: string) => val.length >= 6,
     },
     {
       label: "Includes a lowercase letter",
@@ -126,7 +126,7 @@ const SignUpSecondStep = ({
           Log in
         </Button>
       </div>
-      <div className="flex justify-center items-center bg-amber-400 w-full md:w-1/2 h-full md:h-1/2 p-6 md:p-0">
+      <div className="flex justify-center items-center bg-amber-400 w-full md:w-1/2 h-full p-6 md:p-0">
         <div className="flex flex-col justify-center items-center w-full md:w-[455px]">
           <Image
             src="/images/illustration.png"
@@ -142,11 +142,11 @@ const SignUpSecondStep = ({
           </p>
         </div>
       </div>
-      <div className="flex justify-center items-center w-full md:w-1/2 md:h-1/2 p-6 md:p-0">
+      <div className="flex justify-center items-center w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-start w-full md:w-[407px]">
           <div className="py-6">
             <p className="text-xl md:text-2xl font-bold">Welcome, {username}</p>
-            <p>Connect email and set a password</p>
+            <p className="font-extralight">Connect email and set a password</p>
           </div>
 
           <form onSubmit={handleSignUp}>
