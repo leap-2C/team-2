@@ -7,16 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { sendRequest } from "@/lib/sendRequest";
 import { Eye, EyeOff } from "lucide-react";
-
-interface LoginResponse {
-  token: string;
-  hasProfile: boolean;
-  user: {
-    id: string;
-    email: string;
-    username: string;
-  };
-}
+import { LoginResponse } from "@/lib/types";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +17,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -42,15 +33,16 @@ const LoginPage = () => {
         email,
         password,
       });
-      
+
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("hasLoggedIn", "true");
         toast.success("Login successful");
-        
+
         if (response.data.hasProfile) {
           router.push("/");
         } else {
-          router.push("/profile-setup"); 
+          router.push("/profile-setup");
         }
       }
     } catch (err) {
@@ -64,6 +56,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
+      {/* Left Illustration */}
       <div className="flex justify-center items-center bg-amber-400 w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-center items-center w-full md:w-[455px]">
           <Image
@@ -73,13 +66,17 @@ const LoginPage = () => {
             height={240}
             className="object-cover mb-6 rounded-[30px]"
           />
-          <p className="text-xl md:text-2xl font-bold">Fund your creative work</p>
+          <p className="text-xl md:text-2xl font-bold">
+            Fund your creative work
+          </p>
           <p className="text-sm md:text-[16px] text-center mt-3">
-            Accept support. Start a membership. Setup a shop. It's easier than you think.
+            Accept support. Start a membership. Setup a shop. It's easier than
+            you think.
           </p>
         </div>
       </div>
-      
+
+      {/* Right Login Form */}
       <div className="flex justify-center items-center w-full md:w-1/2 p-6 md:p-0">
         <div className="flex flex-col justify-start w-full md:w-[407px]">
           <div className="py-6">
@@ -100,6 +97,7 @@ const LoginPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
             <div className="mt-4 relative">
               <label htmlFor="password" className="block text-sm font-semibold">
                 Password
@@ -107,7 +105,7 @@ const LoginPage = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md"
                 placeholder="Enter password here"
                 value={password}
@@ -116,7 +114,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 className="absolute top-[46px] right-3 transform -translate-y-1/2"
-                onClick={() => setShowPassword((prev) => !prev)} 
+                onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
                   <EyeOff size={20} className="text-gray-600" />
@@ -125,7 +123,9 @@ const LoginPage = () => {
                 )}
               </button>
             </div>
+
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
             <div className="flex justify-between mt-6">
               <Button
                 type="submit"

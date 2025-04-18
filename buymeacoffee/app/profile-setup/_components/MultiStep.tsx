@@ -39,7 +39,7 @@ const MultiStep = () => {
   };
 
   const steps = [
-    <FirstStep key="1" onNext={handleNextPage} />,
+    <FirstStep key="1" onNext={handleNextPage} userId={formValue.userId || ""} />,
     <SecondStep key="2" onBack={handleBackPage} onNext={function (): void {
       throw new Error("Function not implemented.");
     } }/>,

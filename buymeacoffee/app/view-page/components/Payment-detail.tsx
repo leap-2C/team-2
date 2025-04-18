@@ -1,5 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Pencil, Save } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,8 +15,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import * as Yup from "yup";
-import { useFormik } from "formik";
+
+import { sendRequest } from "@/lib/sendRequest";
+import { useToken } from "@/hooks/TokenContext";
+import { useUser } from "@/hooks/UserContext";
+import { toast } from "react-toastify";
+import { UserData } from "@/lib/types";
+import React from "react";
+import {
+  TextRevealCard,
+  TextRevealCardDescription,
+  TextRevealCardTitle,
+} from "@/components/ui/text-reveal-card";
+import { motion } from "framer-motion";
 
 const PaymentSettings = ({
   onBack,
@@ -27,16 +43,29 @@ const PaymentSettings = ({
     (i + 1).toString().padStart(2, "0")
   );
 
+  const [isEditing, setIsEditing] = useState(false);
+  const { token } = useToken();
+  const { userData } = useUser();
+
+  const cardData = Array.isArray(userData?.bankCard)
+    ? userData.bankCard[0]
+    : undefined;
+
   const formik = useFormik({
     initialValues: {
-      country: "",
-      firstName: "",
-      lastName: "",
-      cardNumber: "",
-      expiryMonth: "",
-      expiryYear: "",
+      country: "mn",
+      firstName: cardData?.firstName || "",
+      lastName: cardData?.lastName || "",
+      cardNumber: cardData?.cardNumber || "",
+      expiryMonth: cardData
+        ? new Date(cardData.expirationDate).getMonth() + 1 + ""
+        : "",
+      expiryYear: cardData
+        ? new Date(cardData.expirationDate).getFullYear() + ""
+        : "",
       cvc: "",
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       country: Yup.string().required("Country is required"),
       firstName: Yup.string().required("First name is required"),
@@ -53,155 +82,228 @@ const PaymentSettings = ({
         .matches(/^\d{3,4}$/, "CVC must be 3 or 4 digits")
         .required("CVC is required"),
     }),
-    onSubmit: (values) => {
-      console.log("Payment submitted:", values);
-      onNext();
+    onSubmit: async (values) => {
+      try {
+        const expirationDate = new Date(
+          Number(values.expiryYear),
+          Number(values.expiryMonth) - 1,
+          1
+        );
+
+        await sendRequest.put(
+          "/bankcard/update",
+          {
+            cardNumber: values.cardNumber,
+            expirationDate: expirationDate.toISOString(),
+            firstName: values.firstName,
+            lastName: values.lastName,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setIsEditing(false);
+        onNext();
+        toast.success("Card updated successfully");
+      } catch (err) {
+        toast.error("Failed to update card");
+      }
     },
   });
 
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="border rounded-lg p-6 space-y-4"
-    >
-      <h3 className="text-lg font-semibold">Payment details</h3>
-
-      <div className="space-y-2">
-        <Label>Select country</Label>
-        <Select
-          value={formik.values.country}
-          onValueChange={(value) => formik.setFieldValue("country", value)}
+    <form onSubmit={formik.handleSubmit} className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Bank Card</h3>
+        <Button
+          type={isEditing ? "submit" : "button"}
+          size="sm"
+          variant="ghost"
+          onClick={toggleEdit}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="usa">United States</SelectItem>
-            <SelectItem value="uk">United Kingdom</SelectItem>
-            <SelectItem value="mn">Mongolia</SelectItem>
-          </SelectContent>
-        </Select>
-        {formik.touched.country && formik.errors.country && (
-          <p className="text-sm text-red-500">{formik.errors.country}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>First name</Label>
-          <Input
-            name="firstName"
-            value={formik.values.firstName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {formik.touched.firstName && formik.errors.firstName && (
-            <p className="text-sm text-red-500">{formik.errors.firstName}</p>
+          {isEditing ? (
+            <>
+              <Save className="w-4 h-4 mr-1" />
+              Save
+            </>
+          ) : (
+            <>
+              <Pencil className="w-4 h-4 mr-1" />
+              Edit
+            </>
           )}
-        </div>
-        <div className="space-y-2">
-          <Label>Last name</Label>
-          <Input
-            name="lastName"
-            value={formik.values.lastName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {formik.touched.lastName && formik.errors.lastName && (
-            <p className="text-sm text-red-500">{formik.errors.lastName}</p>
-          )}
-        </div>
+        </Button>
       </div>
 
-      <div className="space-y-2">
-        <Label>Card Number</Label>
-        <Input
-          name="cardNumber"
-          placeholder="XXXX-XXXX-XXXX-XXXX"
-          value={formik.values.cardNumber}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
-        {formik.touched.cardNumber && formik.errors.cardNumber && (
-          <p className="text-sm text-red-500">{formik.errors.cardNumber}</p>
-        )}
-      </div>
-
-      <div className="flex gap-4">
-        <div className="w-1/3">
-          <div className="space-y-2">
-            <Label>Month</Label>
-
-            <Select
-              value={formik.values.expiryMonth}
-              onValueChange={(value) =>
-                formik.setFieldValue("expiryMonth", value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {formik.touched.expiryMonth && formik.errors.expiryMonth && (
-              <p className="text-sm text-red-500">
-                {formik.errors.expiryMonth}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="w-1/3">
-          <div className="space-y-2">
-            <Label>Year</Label>
-            <Select
-              value={formik.values.expiryYear}
-              onValueChange={(value) =>
-                formik.setFieldValue("expiryYear", value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((y) => (
-                  <SelectItem key={y} value={y}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {formik.touched.expiryYear && formik.errors.expiryYear && (
-              <p className="text-sm text-red-500">{formik.errors.expiryYear}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="w-1/3">
-          <div className="space-y-2">
-            <Label>CVC</Label>
-            <Input
-              name="cvc"
-              placeholder="CVC"
-              value={formik.values.cvc}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+      {/* CARD LOOK */}
+      {!isEditing && (
+        <div className="flex items-center justify-center h-[20rem] rounded-2xl w-full">
+          {/* Blurred Card Container */}
+          <motion.div
+            initial={{ filter: "blur(8px)" }}
+            whileHover={{ filter: "blur(0px)" }}
+            transition={{ duration: 0.3 }}
+            className="relative h-64 w-96 rounded-xl bg-gradient-to-br from-blue-600 to-purple-700 p-6 shadow-2xl overflow-hidden"
+          >
+            {/* Blur overlay */}
+            <motion.div
+              initial={{ opacity: 0.7 }}
+              whileHover={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             />
-            {formik.touched.cvc && formik.errors.cvc && (
-              <p className="text-sm text-red-500">{formik.errors.cvc}</p>
-            )}
-          </div>
-        </div>
-      </div>
 
-      <div className="pt-4 flex justify-between">
-        <Button type="submit">Save changes</Button>
-      </div>
+            {/* VISA Logo */}
+            <div className="text-right text-white font-bold text-2xl italic">
+              VISA
+            </div>
+
+            {/* Chip */}
+            <div className="mt-8 h-10 w-14 rounded bg-yellow-400/20 flex items-center justify-center">
+              <div className="h-6 w-8 rounded-sm bg-yellow-400/40" />
+            </div>
+
+            {/* Card Number */}
+            <div className="mt-6 font-mono text-white text-xl tracking-widest">
+              4242 4242 4242 4242
+            </div>
+
+            {/* Card Details */}
+            <div className="mt-6 flex justify-between text-white text-sm">
+              <div>
+                <div className="text-neutral-300 text-xs">CARD HOLDER</div>
+                <div className="font-medium">JOHN DOE</div>
+              </div>
+              <div>
+                <div className="text-neutral-300 text-xs">EXPIRES</div>
+                <div className="font-medium">12/25</div>
+              </div>
+              <div>
+                <div className="text-neutral-300 text-xs">CVV</div>
+                <div className="font-medium">•••</div>
+              </div>
+            </div>
+
+            {/* Hover hint */}
+            <motion.div
+              initial={{ opacity: 1 }}
+              whileHover={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center text-white/50 text-sm"
+            >
+              Hover to reveal details
+            </motion.div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* FORM FIELDS */}
+      {isEditing && (
+        <>
+          <div className="space-y-2">
+            <Label>Select country</Label>
+            <Select
+              value={formik.values.country}
+              onValueChange={(value) => formik.setFieldValue("country", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="usa">United States</SelectItem>
+                <SelectItem value="uk">United Kingdom</SelectItem>
+                <SelectItem value="mn">Mongolia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>First Name</Label>
+              <Input
+                name="firstName"
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+              />
+            </div>
+            <div>
+              <Label>Last Name</Label>
+              <Input
+                name="lastName"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Card Number</Label>
+            <Input
+              name="cardNumber"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              value={formik.values.cardNumber}
+              onChange={formik.handleChange}
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label>Month</Label>
+              <Select
+                value={formik.values.expiryMonth}
+                onValueChange={(value) =>
+                  formik.setFieldValue("expiryMonth", value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="MM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Year</Label>
+              <Select
+                value={formik.values.expiryYear}
+                onValueChange={(value) =>
+                  formik.setFieldValue("expiryYear", value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="YYYY" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={y}>
+                      {y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>CVC</Label>
+              <Input
+                name="cvc"
+                placeholder="CVC"
+                value={formik.values.cvc}
+                onChange={formik.handleChange}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </form>
   );
 };

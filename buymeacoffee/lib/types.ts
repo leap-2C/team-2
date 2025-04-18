@@ -12,6 +12,13 @@ export type Creator = {
   description: string;
   url: string;
   supporters: Supporter[];
+  donor: {
+    id: number;
+    username: string;
+    profile: {
+      avatarImage: string | null;
+    };
+  };
 };
 
 export type UserProfile = {
@@ -31,6 +38,15 @@ export type Donation = {
   amount: number;
   message: string;
   createdAt: string;
+  donorId: number;
+  specialMessage: string | null;
+  donor: {
+    id: number;
+    username: string;
+    profile: {
+      avatarImage: string | null;
+    };
+  };
 };
 
 export type UserData = {
@@ -40,10 +56,12 @@ export type UserData = {
   createdAt: string;
   profile: UserProfile;
   donationsReceived: Donation[];
+  bankCard: BankCard | null;
 };
 
 export interface FetchedUser {
   username: string;
+  id: number;
   profile: {
     aboutMe: string;
     avatarImage: string;
@@ -51,6 +69,22 @@ export interface FetchedUser {
   } | null;
 }
 
+export type BankCard = {
+  firstName: string;
+  lastName: string;
+  cardNumber: string;
+  expirationDate: string;
+  cvc: string;
+};
+export interface LoginResponse {
+  token: string;
+  hasProfile: boolean;
+  user: {
+    id: string;
+    email: string;
+    username: string;
+  };
+}
 type LandingPageProps = {
   setActivePage: (page: string) => void;
 };

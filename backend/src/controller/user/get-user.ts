@@ -24,7 +24,17 @@ export const getUser = async (req: Request, res: Response) => {
         email: true,
         createdAt: true,
         profile: true,
-        donationsReceived: true,
+        donationsReceived: {
+          include: {
+            donor: { 
+              select: {
+                id: true,
+                username: true, 
+                profile: true,
+              },
+            },
+          },
+        },
         bankCard: true,
       },
     });

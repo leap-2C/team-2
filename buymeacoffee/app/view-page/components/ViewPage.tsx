@@ -1,37 +1,39 @@
-import { useState } from "react";
-import CoverImageUploader from "./CoverImageUploader";
-import ProfileCard from "./ProfileCard";
 import SocialMediaCard from "./SocialMediaCard";
 import SupportersCard from "./SupportersCard";
-import PasswordUpdate from "./Password-update";
 import PaymentDetail from "./Payment-detail";
-import SuccessMessageSettings from "./SuccessMessage";
+import { useUser } from "@/hooks/UserContext";
 
 const ViewPage = () => {
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const { userData } = useUser();
 
   return (
-    <div className="min-h-screen bg-muted py-10">
-      <div className="max-w-6xl mx-auto px-4 space-y-6">
-        <CoverImageUploader
-          currentImage={coverImage}
-          onImageChange={(img) => setCoverImage(img)}
+    <div className="min-h-screen bg-muted pb-20">
+      <div className="w-full">
+        <img
+          src={userData?.profile?.backgroundImage || "galaxy.svg"}
+          alt="Cover"
+          draggable={false}
+          className="w-full h-64 object-cover select-none rounded-xl"
         />
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <ProfileCard />
-            <SocialMediaCard />
-            <SupportersCard />
-          </div>
+      <div className="flex justify-center px-4 mt-10">
+        <div className="w-full max-w-5xl space-y-10">
+          <div className="space-y-8 flex flex-col items-center">
+            <div className="w-full max-w-3xl">
+              <SocialMediaCard />
+            </div>
 
-          <div className="space-y-4">
-            <PasswordUpdate />
-            <PaymentDetail
-              onBack={() => console.log("Back pressed")}
-              onNext={() => console.log("Next pressed")}
-            />
-            <SuccessMessageSettings />
+            <div className="w-full max-w-3xl">
+              <PaymentDetail
+                onBack={() => console.log("Back pressed")}
+                onNext={() => console.log("Next pressed")}
+              />
+            </div>
+
+            <div className="w-full max-w-3xl">
+              <SupportersCard />
+            </div>
           </div>
         </div>
       </div>
