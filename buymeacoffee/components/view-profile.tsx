@@ -20,7 +20,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
   const { token } = useToken();
   const { userData } = useUser() as { userData: UserData };
 
-  const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
+  const donationUrl = `https://buymeacoffee-ashen.vercel.app/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
   )}&token=${token}`;
 
@@ -84,7 +84,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                     <div className="flex items-center gap-2">
                       <Image
                         src={
-                          donation.donor.profile.avatarImage ||
+                          donation.donor.profile?.avatarImage ||
                           "/avatar-image.svg"
                         }
                         alt={`${donation.donor.username}'s avatar`}

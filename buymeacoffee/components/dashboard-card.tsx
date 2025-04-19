@@ -131,7 +131,7 @@ export default function DashboardCard() {
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center font-medium text-sm">
-                  <img src={donation.donor.profile.avatarImage || "/default-avatar.svg"} alt="avatar image" className="rounded-full"/>
+                  <img src={donation.donor.profile?.avatarImage || "/default-avatar.svg"} alt="avatar image" className="rounded-full"/>
                 </div>
                 <div>
                   <p className="font-medium">{donation.donor.username}</p>
