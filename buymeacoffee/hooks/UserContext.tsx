@@ -10,6 +10,7 @@ interface UserContextType {
   userData: UserData | null;
   setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
   userLoading: boolean;
+  fetchUser: ()=> void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -19,31 +20,34 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { token, loading } = useToken();
   const [userLoading, setUserLoading] = useState(false);
 
+
+  const fetchUser = async () => {
+    setUserLoading(true);
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await sendRequest.get("/user/current", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserData(res.data.user);
+    } catch (err) {
+      console.error("Failed to fetch user:", err);
+    } finally {
+      setUserLoading(false); 
+    }
+  };
+
   useEffect(() => {
     if (!token || loading)return;
-    setUserLoading(true);
-  
-    const fetchUser = async () => {
-      try {
-        const res = await sendRequest.get("/user/current", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUserData(res.data.user);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-      } finally {
-        setUserLoading(false); 
-      }
-    };
   
     fetchUser();
-  }, [token, loading]);
+  }, [token, loading, ]);
     
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, userLoading }}>
+    <UserContext.Provider value={{ userData, setUserData, userLoading, fetchUser }}>
       {children}
     </UserContext.Provider>
   );
