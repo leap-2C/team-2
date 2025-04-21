@@ -10,23 +10,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+
 import {toast} from "react-toastify";
 import { getValidImageUrl } from "@/utils/getVAlidImageUrl";
 import { get } from "http";
 
 
+interface HeaderProps {
+  handleLogout: () => void;
+}
 
-
-const Header = ({  }) => {
+const Header: React.FC<HeaderProps> = ({ handleLogout }) => {
   const { userData } = useUser();
-  
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-    toast("Logged out successfully", {type: "success"});
-  };
-
 
   return (
     <header className="w-full border-b px-4 py-2 flex items-center justify-between bg-white">

@@ -17,7 +17,7 @@ import { useUser } from "@/hooks/UserContext";
 const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [name, setName] = useState("Jake");
+  const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
@@ -160,7 +160,7 @@ const ProfileCard = () => {
         <div className="flex justify-between items-start">
           <div className="flex-1">
             {isEditing ? (
-            <div></div>
+              <div></div>
             ) : (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-purple-200 overflow-hidden flex items-center justify-center text-white font-bold text-sm">
