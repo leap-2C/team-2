@@ -20,8 +20,10 @@ import { sendRequest } from "@/lib/sendRequest";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
 import { toast } from "react-toastify";
+
 import React from "react";
 import { CardLook } from "@/components/CardLook";
+
 
 const PaymentSettings = ({
   onBack,
@@ -45,6 +47,17 @@ const PaymentSettings = ({
     ? userData.bankCard[0]
     : undefined;
 
+  const [localCardData, setLocalCardData] = useState(cardData);
+
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem("cardData") || "{}");
+    if (savedData) {
+      setLocalCardData(savedData);
+    }
+  }, []);
+
+  const displayCard = localCardData || cardData;
+
   const formik = useFormik({
     initialValues: {
       country: "mn",
@@ -52,10 +65,10 @@ const PaymentSettings = ({
       lastName: cardData?.lastName || "",
       cardNumber: cardData?.cardNumber || "",
       expiryMonth: cardData
-        ? new Date(cardData.expirationDate).getMonth() + 1 + ""
+        ? (new Date(cardData.expirationDate).getMonth() + 1).toString()
         : "",
       expiryYear: cardData
-        ? new Date(cardData.expirationDate).getFullYear() + ""
+        ? new Date(cardData.expirationDate).getFullYear().toString()
         : "",
       cvc: "",
     },
@@ -97,6 +110,17 @@ const PaymentSettings = ({
           }
         );
 
+        const updatedCardData = {
+          cardNumber: values.cardNumber,
+          expirationDate: expirationDate.toISOString(),
+          firstName: values.firstName,
+          lastName: values.lastName,
+        };
+
+        localStorage.setItem("cardData", JSON.stringify(updatedCardData));
+
+        setLocalCardData(updatedCardData);
+
         setIsEditing(false);
         onNext();
         toast.success("Card updated successfully");
@@ -107,7 +131,11 @@ const PaymentSettings = ({
   });
 
   const toggleEdit = () => {
-    setIsEditing(!isEditing);
+    if (isEditing) {
+      formik.handleSubmit();
+    } else {
+      setIsEditing(true);
+    }
   };
 
   return (
@@ -134,12 +162,13 @@ const PaymentSettings = ({
         </Button>
       </div>
 
-      {/* CARD LOOK */}
       {!isEditing && (
+
+                
        <CardLook/>
+
       )}
 
-      {/* FORM FIELDS */}
       {isEditing && (
         <>
           <div className="space-y-2">

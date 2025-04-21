@@ -14,7 +14,7 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r p-4 space-y-2">
+    <aside className="w-64 bg-white p-4 space-y-2 h-full">
       {items.map((item) => (
         <button
           key={item.key}
