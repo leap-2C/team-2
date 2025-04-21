@@ -12,12 +12,16 @@ import { Creator } from "@/lib/types";
 import ViewPage from "@/app/view-page/components/ViewPage";
 import { toast } from "react-toastify";
 import { Tabs } from "@/components/ui/tabs";
+import { useToken } from "@/hooks/TokenContext";
 
 export default function DashboardPage() {
   const [activePage, setActivePage] = useState("landing");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+  const {token} = useToken();
+
+  
 
   useEffect(() => {
     setIsClient(true);

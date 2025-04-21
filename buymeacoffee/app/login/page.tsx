@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { sendRequest } from "@/lib/sendRequest";
 import { Eye, EyeOff } from "lucide-react";
 import { LoginResponse } from "@/lib/types";
+import { useUser } from "@/hooks/UserContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const {fetchUser} = useUser()
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,6 +53,7 @@ const LoginPage = () => {
       toast.error("Login failed");
     } finally {
       setLoading(false);
+      fetchUser()
     }
   };
 

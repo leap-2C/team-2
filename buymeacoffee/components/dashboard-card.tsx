@@ -16,6 +16,7 @@ import { getValidImageUrl } from "@/utils/getVAlidImageUrl";
 export default function DashboardCard() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const { userData, userLoading } = useUser();
+  
 
   const totalEarnings = userData?.donationsReceived?.reduce(
     (sum, donation) => sum + donation.amount,
