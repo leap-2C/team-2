@@ -38,13 +38,6 @@ export default function DashboardPage() {
     setActivePage("profile");
   };
 
-  const handleLogout = (): void => {
-    localStorage.setItem("hasLoggedIn", "false");
-    localStorage.removeItem("token");
-    toast("Successfully logged out", { type: "success" });
-    router.push("/");
-  };
-
   if (!isClient) {
     return null;
   }
@@ -55,7 +48,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Header handleLogout={handleLogout} />
+      <Header/>
 
       <Tabs
         tabs={[
