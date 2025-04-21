@@ -24,7 +24,7 @@ export const TokenProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    setToken(storedToken || null);
+    setToken(storedToken);
     setLoading(false);
   }, []);
 

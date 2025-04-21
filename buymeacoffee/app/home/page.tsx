@@ -39,7 +39,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Header handleLogout={handleLogout} />{" "}
+      <Header />{" "}
       <div className="flex flex-col sm:flex-row flex-1">
         <div className="w-full sm:w-64 bg-white border-r p-4 mb-4 sm:mb-0">
           <Sidebar

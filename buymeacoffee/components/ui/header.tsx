@@ -11,6 +11,11 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+import {toast} from "react-toastify";
+import { getValidImageUrl } from "@/utils/getVAlidImageUrl";
+import { get } from "http";
+
+
 interface HeaderProps {
   handleLogout: () => void;
 }
@@ -36,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ handleLogout }) => {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded-md">
               <Image
-                src={userData?.profile?.avatarImage || "/avatar-image.svg"}
+                src={getValidImageUrl(userData?.profile?.avatarImage || "/avatar-image.svg")}
                 alt="User avatar"
                 width={30}
                 height={30}

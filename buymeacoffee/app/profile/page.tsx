@@ -1,5 +1,5 @@
 
-import { useUser } from "@/hooks/UserContext";
+
 
 
 
@@ -13,3 +13,5 @@ const Profile = () => {
     </div>
   );
 };
+
+export default Profile;
