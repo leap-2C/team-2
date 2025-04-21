@@ -11,12 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "react-toastify";
-import { useToken } from "@/hooks/TokenContext";
 import { sendRequest } from "@/lib/sendRequest";
 
 export default function PaymentSetup() {
   const router = useRouter();
-  const { token } = useToken();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -55,6 +53,7 @@ export default function PaymentSetup() {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
+        const token = localStorage.getItem("token")
         const cardData = {
           cardNumber: values.cardNumber.replace(/-/g, ''),
           firstName: values.firstName,

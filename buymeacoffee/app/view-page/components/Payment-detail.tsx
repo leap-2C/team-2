@@ -49,12 +49,7 @@ const PaymentSettings = ({
 
   const [localCardData, setLocalCardData] = useState(cardData);
 
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("cardData") || "{}");
-    if (savedData) {
-      setLocalCardData(savedData);
-    }
-  }, []);
+ 
 
   const displayCard = localCardData || cardData;
 
