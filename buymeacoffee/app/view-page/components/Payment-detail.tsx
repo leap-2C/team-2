@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Pencil, Save } from "lucide-react";
@@ -17,13 +17,12 @@ import {
 } from "@/components/ui/select";
 
 import { sendRequest } from "@/lib/sendRequest";
-import { useToken } from "@/hooks/TokenContext";
+
 import { useUser } from "@/hooks/UserContext";
 import { toast } from "react-toastify";
 
 import React from "react";
 import { CardLook } from "@/components/CardLook";
-
 
 const PaymentSettings = ({
   onBack,
@@ -40,7 +39,7 @@ const PaymentSettings = ({
   );
 
   const [isEditing, setIsEditing] = useState(false);
-  const { token } = useToken();
+
   const { userData } = useUser();
 
   const cardData = Array.isArray(userData?.bankCard)
@@ -91,6 +90,7 @@ const PaymentSettings = ({
     }),
     onSubmit: async (values) => {
       try {
+        const token = localStorage.getItem("token");
         const expirationDate = new Date(
           Number(values.expiryYear),
           Number(values.expiryMonth) - 1,
@@ -162,12 +162,7 @@ const PaymentSettings = ({
         </Button>
       </div>
 
-      {!isEditing && (
-
-                
-       <CardLook/>
-
-      )}
+      {!isEditing && <CardLook />}
 
       {isEditing && (
         <>
@@ -271,7 +266,6 @@ const PaymentSettings = ({
             </div>
           </div>
         </>
-        
       )}
     </form>
   );
