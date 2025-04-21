@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Creator, Supporter } from "@/lib/types";
+import { Creator } from "@/lib/types";
 import QRCode from "react-qr-code";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
@@ -14,13 +14,13 @@ import Image from "next/image";
 export default function ViewProfile({ creator }: { creator: Creator }) {
   const [amount, setAmount] = useState<number>(1);
   const [message, setMessage] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const recipientUsername = creator.name;
   const { token } = useToken();
   const { userData } = useUser() as { userData: UserData };
 
-  const donationUrl = `http://192.168.21.15:3000/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
+  const donationUrl = `https://buymeacoffee-ashen.vercel.app/confirm-donation?amount=${amount}&user=${recipientUsername}&message=${encodeURIComponent(
     message
   )}&token=${token}`;
 
@@ -34,16 +34,6 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
 
   return (
     <div className="space-y-6">
-      {/* Background image */}
-      <div className="relative w-full h-52 md:h-64 lg:h-72 overflow-hidden rounded-xl">
-        <img
-          src="/galaxy.svg"
-          alt="Background"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Main content */}
       <div className="grid md:grid-cols-2 gap-6 px-4 md:px-0">
         {/* Left Column - Creator Info */}
         <div className="space-y-4">
@@ -84,7 +74,7 @@ export default function ViewProfile({ creator }: { creator: Creator }) {
                     <div className="flex items-center gap-2">
                       <Image
                         src={
-                          donation.donor.profile.avatarImage ||
+                          donation.donor.profile?.avatarImage ||
                           "/avatar-image.svg"
                         }
                         alt={`${donation.donor.username}'s avatar`}

@@ -160,11 +160,7 @@ const ProfileCard = () => {
         <div className="flex justify-between items-start">
           <div className="flex-1">
             {isEditing ? (
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="text-base font-semibold"
-              />
+            <div></div>
             ) : (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-purple-200 overflow-hidden flex items-center justify-center text-white font-bold text-sm">
@@ -192,7 +188,7 @@ const ProfileCard = () => {
               className="text-sm flex gap-1 items-center"
               onClick={toggleEdit}
             >
-              <Pencil className="w-4 h-4" />
+              <Pencil className="w-4 h-4 cursor-pointer" />
               Edit
             </Button>
           )}

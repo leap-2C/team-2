@@ -42,7 +42,7 @@ const LoginPage = () => {
         if (response.data.hasProfile) {
           router.push("/");
         } else {
-          router.push("/profile-setup");
+          router.push("/setup/profile");
         }
       }
     } catch (err) {

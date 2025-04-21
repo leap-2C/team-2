@@ -11,6 +11,7 @@ import { ChevronDown, Share2 } from "lucide-react";
 import Image from "next/image";
 import { useToken } from "@/hooks/TokenContext";
 import { useUser } from "@/hooks/UserContext";
+import { getValidImageUrl } from "@/utils/getVAlidImageUrl";
 
 export default function DashboardCard() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -51,7 +52,9 @@ export default function DashboardCard() {
       <Card className="w-full p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Image
-            src={userData?.profile?.avatarImage || "/avatar-image.svg"}
+            src={getValidImageUrl(
+              userData?.profile?.avatarImage || "/default-avatar.svg"
+            )}
             alt="User Avatar"
             width={30}
             height={30}
@@ -131,7 +134,16 @@ export default function DashboardCard() {
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center font-medium text-sm">
-                  <img src={donation.donor.profile.avatarImage || "/default-avatar.svg"} alt="avatar image" className="rounded-full"/>
+                  <Image
+                    src={getValidImageUrl(
+                      donation.donor.profile?.avatarImage ||
+                      "/default-avatar.svg"
+                    )}
+                    alt="avatar image"
+                    width={30}
+                    height={30}
+                    className="rounded-full"
+                  />
                 </div>
                 <div>
                   <p className="font-medium">{donation.donor.username}</p>

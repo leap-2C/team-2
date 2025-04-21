@@ -10,16 +10,20 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {toast} from "react-toastify";
 
 
-interface HeaderProps {
-  handleLogout: () => void; 
-}
 
-const Header: React.FC<HeaderProps> = ({ handleLogout }) => {
+
+const Header = ({  }) => {
   const { userData } = useUser();
   
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+    toast("Logged out successfully", {type: "success"});
+  };
 
 
   return (

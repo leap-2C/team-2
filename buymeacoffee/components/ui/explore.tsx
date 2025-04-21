@@ -9,8 +9,8 @@ import Image from "next/image";
 import { Creator } from "../../lib/types";
 import { sendRequest } from "@/lib/sendRequest";
 import { FetchedUser } from "@/lib/types";
-import { Skeleton } from "./skeleton";
 import ExploreSkeleton from "../Export-skeleton";
+import { getValidImageUrl } from "@/utils/getVAlidImageUrl";
 
 export default function Explore({
   handleViewProfile,
@@ -39,17 +39,7 @@ export default function Explore({
     fetchExplore();
   }, []);
 
-  const getValidImageUrl = (url: string | undefined) => {
-    if (!url || url === "null" || url === "undefined") {
-      return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
-    }
 
-    const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com/;
-    if (cloudinaryUrlPattern.test(url)) {
-      return url;
-    }
-    return "https://media.giphy.com/media/KeQgaiv19rCEdVFnW8/giphy.gif";
-  };
 
   const creatorsData = usersData.map((user) => ({
     name: user.username,
